@@ -4,13 +4,18 @@
         "esModuleInterop": true,
         "target": "es2017",
         "moduleResolution": "node",
+        "experimentalDecorators": true,
         "sourceMap": true,
         "baseUrl": ".",
         "outDir": "dist",
         "lib": [
             "esnext"
         ],
-        "rootDir": "./"
+        "paths": {
+            "@/*": [
+                "src/*"
+            ]
+        }
     },
     "include": [
         "src/**/*"
