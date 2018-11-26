@@ -25,6 +25,8 @@
     "typescript": "^3.1.6"
   },
   "dependencies": {
-    "express": "^4.16.4"
+    "aws-sdk": "^2.361.0",
+    "express": "^4.16.4",
+    "uuid": "^3.3.2"
   }
 }
