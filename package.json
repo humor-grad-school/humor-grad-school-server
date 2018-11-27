@@ -23,6 +23,7 @@
     "@types/express": "^4.16.0",
     "@types/knex": "^0.15.1",
     "@types/node": "^10.12.10",
+    "@types/s3rver": "0.0.30",
     "sqlite3": "^4.0.4",
     "typescript": "^3.1.6"
   },
@@ -35,6 +36,7 @@
     "module-alias": "^2.1.0",
     "mysql2": "^1.6.4",
     "objection": "^1.4.0",
+    "s3rver": "^2.2.6",
     "uuid": "^3.3.2"
   },
   "_moduleAliases": {

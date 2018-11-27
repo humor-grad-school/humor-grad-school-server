@@ -35,8 +35,7 @@ function validateBody<T>(type: { new(): T; }) {
   }
 }
 
-router.route('/')
-  .post(validateBody(UserPostBody), async (req, res) => {
+router.post('/', validateBody(UserPostBody), async (req, res) => {
     const body = req.body as UserPostBody;
     try {
       await newUser(body.username);
@@ -44,11 +43,13 @@ router.route('/')
       return res.sendStatus(500);
     }
     res.sendStatus(200);
-  })
-  .get(async (req, res) => {
-    const user = await UserModel.query().where('username', 'test');
-    console.log(user);
-    res.send(user);
   });
+
+router.get('/:id', async (req, res) => {
+  const id = req.params.id;
+  const user = await UserModel.query().where('id', id);
+  console.log(user);
+  res.send(user);
+});
 
 export default router;
