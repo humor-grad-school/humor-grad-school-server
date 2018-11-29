@@ -1,4 +1,9 @@
-const serverUrl = 'http://localshost:8080';
+const serverUrl = 'http://localhost:8080';
+
+enum ContentType {
+  CONTENT = 'content',
+  MEDIA = 'media',
+};
 
 export async function check2xx(response: Response) {
   if (response.status >= 200 || response.status < 300) {
@@ -15,8 +20,8 @@ export interface GetPreSignedUrlResponse {
   key: string;
 }
 
-async function getPreSignedUrl(): Promise<GetPreSignedUrlResponse> {
-  const response = await fetch(`${serverUrl}/post/preSignedUrl`);
+async function getPreSignedUrl(type: ContentType): Promise<GetPreSignedUrlResponse> {
+  const response = await fetch(`${serverUrl}/post/preSignedUrl?type=${type}`);
   await check2xx(response);
   return response.json();
 }
@@ -28,12 +33,12 @@ async function requestEncodingMedia(key: string) {
   await check2xx(response);
 }
 
-async function uploadWithPreSignedUrl(content: string | File): Promise<string> {
+async function uploadWithPreSignedUrl(content: string | File, type: ContentType): Promise<string> {
   const {
     url,
     fields,
     key,
-  } = await getPreSignedUrl();
+  } = await getPreSignedUrl(type);
 
   const formData = new FormData();
   Object.entries(fields).forEach(([key, value]) => {
@@ -53,7 +58,7 @@ async function uploadWithPreSignedUrl(content: string | File): Promise<string> {
 }
 
 async function uploadMedia(media: File) {
-  const key = await uploadWithPreSignedUrl(media);
+  const key = await uploadWithPreSignedUrl(media, ContentType.MEDIA);
   await requestEncodingMedia(key);
 }
 
@@ -66,7 +71,7 @@ async function whatSmithooToDoForUploadingPost() {
     await uploadMedia(media);
   }));
 
-  await uploadWithPreSignedUrl(contentJson);
+  await uploadWithPreSignedUrl(contentJson, ContentType.CONTENT);
 
   return 'SEX'
 }

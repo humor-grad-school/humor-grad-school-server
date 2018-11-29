@@ -1,4 +1,6 @@
 {
-    "BEFORE_ENCODING_S3_BUCKET": "TODO",
-    "S3_DEVELOPMENT_PORT": 4578
+    "BEFORE_ENCODING_S3_BUCKET": "before-encoding-s3-bucket",
+    "AFTER_ENCODING_S3_BUCKET": "after-encoding-s3-bucket",
+    "CONTENT_S3_BUCKET": "content-s3-bucket",
+    "S3_DEVELOPMENT_PORT": 9000
 }

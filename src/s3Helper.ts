@@ -1,36 +1,46 @@
-import S3rver from 's3rver';
 import config from '@/config.json';
 import AWS from 'aws-sdk';
+import { execFile } from 'child_process';
 
 const uuid = require('uuid/v4');
 
 const MB = 1024 * 1024;
 
-export const s3 = new AWS.S3();
+const isDevelopment = process.env.NODE_ENV === 'development';
+
+export const s3 = isDevelopment
+  ? new AWS.S3({
+    accessKeyId: '123',
+    secretAccessKey: '12345678',
+    endpoint: 'http://127.0.0.1:9000',
+    s3ForcePathStyle: true, // needed with minio?
+    signatureVersion: 'v4'
+  })
+  : new AWS.S3();
 
 class S3Helper {
-  s3Server;
-
-  init() {
-    if (process.env.NODE_ENV === 'development') {
-      this.runS3DevelopmentServer(config.S3_DEVELOPMENT_PORT);
-      const endpoint = new AWS.Endpoint(`localhost:${config.S3_DEVELOPMENT_PORT}`);
-      s3.endpoint = endpoint;
+  async init() {
+    if (isDevelopment) {
+      const buckets = [
+        config.BEFORE_ENCODING_S3_BUCKET,
+        config.AFTER_ENCODING_S3_BUCKET,
+        config.CONTENT_S3_BUCKET,
+      ];
+      await Promise.all(buckets.map(async bucket => {
+        const isExists = await this.checkBucketExists(bucket);
+        if (isExists) {
+          return;
+        }
+        await this.createBucket(bucket);
+        await this.makeBucketPublic(bucket);
+      }));
     }
   }
-  runS3DevelopmentServer(port) {
-    const s3Server = new S3rver({
-      port,
-      hostname: 'localhost',
-      silent: false,
-      directory: '/tmp/s3rver'
-    });
-  }
-  async createPresignedPost(sizeInMB: number): Promise<{ url: string, fields: { [key: string]: string }, key: string }> {
+  async createPresignedPost(sizeInMB: number, bucketName: string): Promise<{ url: string, fields: { [key: string]: string }, key: string }> {
     const key = uuid();
 
     const params = {
-      Bucket: config.BEFORE_ENCODING_S3_BUCKET,
+      Bucket: bucketName,
       Conditions: [
         ['content-length-range', 0, sizeInMB * MB],
         {
@@ -56,6 +66,45 @@ class S3Helper {
       fields,
       key,
     };
+  }
+  async checkBucketExists(bucket) {
+    const params = {
+      Bucket: bucket
+    };
+    try {
+      await s3.headBucket(params).promise();
+      return true;
+    } catch (err) {
+      if (err.code === 'NotFound') {
+        return false;
+      }
+      throw err;
+    }
+  }
+  async createBucket(bucket: string) {
+    console.log('createBucket : ', bucket);
+    const params = {
+      Bucket: bucket,
+    };
+    await s3.createBucket(params).promise();
+  }
+  async makeBucketPublic(bucket: string) {
+    console.log('makeBucketPublic : ', bucket);
+    const params = {
+      Bucket: bucket,
+      Policy: JSON.stringify({
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": `arn:aws:s3:::${bucket}/*`
+          }
+        ]
+      })
+    };
+    await s3.putBucketPolicy(params).promise();
   }
 }
 

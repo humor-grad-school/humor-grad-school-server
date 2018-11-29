@@ -7,6 +7,10 @@ import validateBody from './validateBody';
 import UserModel from '@/Model/UserModel';
 import s3Helper from '@/s3Helper';
 
+import encodeVideo from '@/Api/encode/encodeVideo';
+import '@/Api/encode/encodeVideo';
+import encode from './encode/encode';
+
 const router = express.Router();
 
 class PostPostBody {
@@ -27,8 +31,21 @@ router.post('/', validateBody(PostPostBody), async (req, res) => {
   res.sendStatus(200);
 });
 
+const bucketTypeMap = {
+  content: config.CONTENT_S3_BUCKET,
+  media: config.BEFORE_ENCODING_S3_BUCKET,
+}
+
 router.get('/preSignedUrl', async (req, res) => {
-  const { fields, url, key } = await s3Helper.createPresignedPost(20);
+  const { type } = req.query;
+
+  const bucket = bucketTypeMap[type];
+
+  if (!bucket) {
+    return res.sendStatus(404);
+  }
+
+  const { fields, url, key } = await s3Helper.createPresignedPost(20, bucket);
   res.send({
     fields,
     url,
@@ -45,6 +62,12 @@ router.get('/:id', async (req, res) => {
   }
   console.log(post);
   res.send(post);
+});
+
+router.post('/encode/:key', async (req, res) => {
+  const { key } = req.params;
+  await encode(key);
+  res.sendStatus(200);
 });
 
 export default router;
