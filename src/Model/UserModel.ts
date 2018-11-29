@@ -4,6 +4,8 @@ import PostModel from './PostModel';
 export default class UserModel extends Model {
   readonly id!: number;
   username!: string;
+  createAt: Date;
+  updateAt: Date;
 
   static tableName = 'users';
 

@@ -6,6 +6,8 @@ export default class PostModel extends Model {
   title!: string;
   contentS3Key!: string;
   writer!: UserModel;
+  createAt: Date;
+  updateAt: Date;
 
   static tableName = 'posts';
 
