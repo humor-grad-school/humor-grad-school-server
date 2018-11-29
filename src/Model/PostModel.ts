@@ -4,7 +4,7 @@ import UserModel from './UserModel';
 export default class PostModel extends Model {
   readonly id!: number;
   title!: string;
-  contentS3Id!: string;
+  contentS3Key!: string;
   writer!: UserModel;
 
   static tableName = 'posts';
