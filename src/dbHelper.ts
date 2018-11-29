@@ -1,14 +1,9 @@
 import Knex from 'knex';
 import { Model } from 'objection';
+const knexFile = require('../knexfile');
 
 // Initialize knex.
-const knex = Knex({
-  client: 'sqlite3',
-  useNullAsDefault: true,
-  connection: {
-    filename: 'tmp/example.db'
-  }
-});
+const knex = Knex(knexFile[process.env.NODE_ENV]);
 
 Model.knex(knex);
 
