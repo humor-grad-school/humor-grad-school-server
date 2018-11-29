@@ -6,14 +6,16 @@ const uuid = require('uuid/v4');
 
 const MB = 1024 * 1024;
 
+export const s3 = new AWS.S3();
+
 class S3Helper {
   s3Server;
-  s3: AWS.S3 = new AWS.S3();
+
   init() {
     if (process.env.NODE_ENV === 'development') {
       this.runS3DevelopmentServer(config.S3_DEVELOPMENT_PORT);
       const endpoint = new AWS.Endpoint(`localhost:${config.S3_DEVELOPMENT_PORT}`);
-      this.s3.endpoint = endpoint;
+      s3.endpoint = endpoint;
     }
   }
   runS3DevelopmentServer(port) {
@@ -41,7 +43,7 @@ class S3Helper {
       url,
       fields,
     } = await new Promise<AWS.S3.PresignedPost>((resolve, reject) => {
-      this.s3.createPresignedPost(params, (err, data) => {
+      s3.createPresignedPost(params, (err, data) => {
         if (err) {
           return reject(err);
         }
