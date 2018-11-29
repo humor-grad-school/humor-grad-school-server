@@ -1,6 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import UserApiRouter from './UserApiRouter';
+import PostApiRouter from './PostApiRouter';
 import { ValidationError } from 'class-validator';
 
 export default function run(port: number) {
@@ -14,6 +15,7 @@ export default function run(port: number) {
   });
 
   app.use('/user', UserApiRouter);
+  app.use('/post', PostApiRouter);
 
   app.use((err, req, res, next) => {
     if (err instanceof ValidationError) {

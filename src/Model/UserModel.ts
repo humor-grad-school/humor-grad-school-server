@@ -9,7 +9,7 @@ export default class UserModel extends Model {
 
   static tableName = 'users';
 
-  relationMappings = () => ({
+  static relationMappings = () => ({
     posts: {
       relation: Model.HasManyRelation,
       modelClass: PostModel,

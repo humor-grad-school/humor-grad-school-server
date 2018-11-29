@@ -11,13 +11,13 @@ export default class PostModel extends Model {
 
   static tableName = 'posts';
 
-  relationMappings = () => ({
+  static relationMappings = () => ({
     writer: {
       relation: Model.BelongsToOneRelation,
       modelClass: UserModel,
       join: {
         from: 'posts.writerId',
-        to: 'user.id'
+        to: 'users.id'
       },
     },
   });
