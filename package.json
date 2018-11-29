@@ -6,8 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "watch": "tsc -w",
-    "start": "node dist/index"
+    "watch-build": "tsc -w",
+    "watch-start": "nodemon --watch dist dist/index.js",
+    "start": "node dist/index.js"
   },
   "repository": {
     "type": "git",
@@ -24,6 +25,7 @@
     "@types/knex": "^0.15.1",
     "@types/node": "^10.12.10",
     "@types/s3rver": "0.0.30",
+    "nodemon": "^1.18.7",
     "sqlite3": "^4.0.4",
     "typescript": "^3.1.6"
   },
