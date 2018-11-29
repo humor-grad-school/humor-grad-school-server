@@ -25,14 +25,14 @@ class UserPostBody {
 }
 
 router.post('/', validateBody(UserPostBody), async (req, res) => {
-    const body = req.body as UserPostBody;
-    try {
-      await newUser(body.username);
-    } catch (err) {
-      return res.sendStatus(500);
-    }
-    res.sendStatus(200);
-  });
+  const body = req.body as UserPostBody;
+  try {
+    await newUser(body.username);
+  } catch (err) {
+    return res.sendStatus(500);
+  }
+  res.sendStatus(200);
+});
 
 router.get('/:id', async (req, res) => {
   const id = req.params.id;
