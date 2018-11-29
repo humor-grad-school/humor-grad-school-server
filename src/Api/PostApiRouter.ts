@@ -18,7 +18,7 @@ class PostPostBody {
 router.post('/', validateBody(PostPostBody), async (req, res) => {
   const body = req.body as PostPostBody;
 
-  const user = (await UserModel.query().where({ id: body.writerId }))[0];
+  const user = await UserModel.query().where({ id: body.writerId }).first();
   await user.$relatedQuery<PostModel>('posts').insert({
     title: body.title,
     contentS3Key: body.contentS3Key,
@@ -28,7 +28,7 @@ router.post('/', validateBody(PostPostBody), async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   const id = req.params.id;
-  const post = (await PostModel.query().where('id', id))[0];
+  const post = await PostModel.query().where('id', id).first();
   if (!post) {
     res.sendStatus(404);
     return;
