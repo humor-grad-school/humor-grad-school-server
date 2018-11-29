@@ -1,0 +1,3 @@
+[submodule "DATABASE"]
+	path = DATABASE
+	url = https://github.com/humor-grad-school/development-databse.git
