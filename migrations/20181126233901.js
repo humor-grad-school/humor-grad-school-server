@@ -1,6 +1,10 @@
 
 exports.up = function (knex, Promise) {
   return knex.schema
+    .createTable('users', table => {
+      table.increments('id').primary();
+      table.string('username').unique();
+    })
     .createTable('posts', table => {
       table.increments('id').primary();
       table.string('contentS3Id');
@@ -9,10 +13,6 @@ exports.up = function (knex, Promise) {
         .unsigned()
         .references('id')
         .inTable('users');
-    })
-    .createTable('users', table => {
-      table.increments('id').primary();
-      table.string('username').unique();
     });
 };
 
