@@ -26,11 +26,11 @@ class S3Helper {
       directory: '/tmp/s3rver'
     });
   }
-  async createPresignedPost(sizeInMB: number): Promise<{ url: string, fields: { [key: string]: string }}> {
+  async createPresignedPost(sizeInMB: number): Promise<{ url: string, fields: { [key: string]: string }, key: string }> {
     const key = uuid();
 
     const params = {
-      Bucket: 'twitch-channel-feed-media-before-encode',
+      Bucket: config.BEFORE_ENCODING_S3_BUCKET,
       Conditions: [
         ['content-length-range', 0, sizeInMB * MB],
         {
@@ -53,7 +53,8 @@ class S3Helper {
 
     return {
       url,
-      fields
+      fields,
+      key,
     };
   }
 }

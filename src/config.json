@@ -1,4 +1,4 @@
 {
-    "beforeEncodingS3Bucket": "TODO",
+    "BEFORE_ENCODING_S3_BUCKET": "TODO",
     "S3_DEVELOPMENT_PORT": 4578
 }

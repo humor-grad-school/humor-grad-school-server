@@ -5,6 +5,7 @@ import config from '@/config.json';
 import PostModel from '@/Model/PostModel';
 import validateBody from './validateBody';
 import UserModel from '@/Model/UserModel';
+import s3Helper from '@/s3Helper';
 
 const router = express.Router();
 
@@ -24,6 +25,15 @@ router.post('/', validateBody(PostPostBody), async (req, res) => {
     contentS3Key: body.contentS3Key,
   });
   res.sendStatus(200);
+});
+
+router.get('/preSignedUrl', async (req, res) => {
+  const { fields, url, key } = await s3Helper.createPresignedPost(20);
+  res.send({
+    fields,
+    url,
+    key,
+  });
 });
 
 router.get('/:id', async (req, res) => {
