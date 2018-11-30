@@ -10,6 +10,7 @@ import s3Helper from '@/s3Helper';
 import encodeVideo from '@/Api/encode/encodeVideo';
 import '@/Api/encode/encodeVideo';
 import encode from './encode/encode';
+import CommentModel from '@/Model/CommentModel';
 
 const router = express.Router();
 
@@ -28,6 +29,47 @@ router.post('/', validateBody(PostPostBody), async (req, res) => {
     title: body.title,
     contentS3Key: body.contentS3Key,
   });
+  res.sendStatus(200);
+});
+
+class CommentPostBody {
+  writerId: number;
+  contentS3Key: string;
+}
+
+router.post('/:postId/comment', validateBody(CommentPostBody), async (req, res) => {
+  const { postId } = req.params;
+
+  await CommentModel.query().insert({
+    writerId: req.body.writerId,
+    contentS3Key: req.body.contentS3Key,
+    postId,
+  });
+
+  res.sendStatus(200);
+});
+
+router.get('/comment/:commentId', validateBody(CommentPostBody), async (req, res) => {
+  const { commentId } = req.params;
+
+  const comment = await CommentModel.query().findById(commentId);
+  if (!comment) {
+    return res.sendStatus(404);
+  }
+
+  res.send(comment);
+});
+
+router.post('/:postId/comment/:parentCommentId', validateBody(CommentPostBody), async (req, res) => {
+  const { postId, parentCommentId } = req.params;
+
+  await CommentModel.query().insert({
+    writerId: req.body.writerId,
+    contentS3Key: req.body.contentS3Key,
+    postId,
+    parentCommentId,
+  });
+
   res.sendStatus(200);
 });
 
