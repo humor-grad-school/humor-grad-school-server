@@ -62,7 +62,6 @@ router.get('/comment/:commentId', validateBody(CommentPostBody), async (req, res
 
 router.post('/:postId/comment/:parentCommentId', validateBody(CommentPostBody), async (req, res) => {
   const { postId, parentCommentId } = req.params;
-
   await CommentModel.query().insert({
     writerId: req.body.writerId,
     contentS3Key: req.body.contentS3Key,
@@ -97,10 +96,9 @@ router.get('/preSignedUrl', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   const id = req.params.id;
-  const post = await PostModel.query().where('id', id).first();
+  const post = await PostModel.query().findById(id).eager('comments');
   if (!post) {
-    res.sendStatus(404);
-    return;
+    return res.sendStatus(404);
   }
   console.log(post);
   res.send(post);

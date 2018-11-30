@@ -1,5 +1,6 @@
 import { Model } from 'objection';
 import UserModel from './UserModel';
+import CommentModel from './CommentModel';
 
 export default class PostModel extends Model {
   readonly id!: number;
@@ -8,6 +9,8 @@ export default class PostModel extends Model {
   writer!: UserModel;
   createAt: Date;
   updateAt: Date;
+
+  comments: CommentModel[];
 
   static tableName = 'posts';
 
@@ -18,6 +21,14 @@ export default class PostModel extends Model {
       join: {
         from: 'posts.writerId',
         to: 'users.id'
+      },
+    },
+    comments: {
+      relation: Model.HasManyRelation,
+      modelClass: CommentModel,
+      join: {
+        from: 'posts.id',
+        to: 'comments.writerId',
       },
     },
   });
