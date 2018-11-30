@@ -36,7 +36,7 @@ router.post('/', validateBody(UserPostBody), async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   const id = req.params.id;
-  const user = await UserModel.query().where('id', id).first();
+  const user = await UserModel.query().findById(id);
   if (!user) {
     res.sendStatus(404);
     return;

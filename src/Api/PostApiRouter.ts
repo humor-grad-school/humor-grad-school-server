@@ -24,7 +24,7 @@ class PostPostBody {
 router.post('/', validateBody(PostPostBody), async (req, res) => {
   const body = req.body as PostPostBody;
 
-  const user = await UserModel.query().where({ id: body.writerId }).first();
+  const user = await UserModel.query().findById(body.writerId);
   await user.$relatedQuery<PostModel>('posts').insert({
     title: body.title,
     contentS3Key: body.contentS3Key,
