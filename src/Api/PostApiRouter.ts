@@ -1,14 +1,10 @@
 import express from 'express';
-import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } from 'class-validator';
-import { ErrorCode } from './ErrorCode';
+import { IsInt } from 'class-validator';
 import config from '@/config.json';
 import PostModel from '@/Model/PostModel';
 import validateBody from './validateBody';
-import UserModel from '@/Model/UserModel';
 import s3Helper from '@/s3Helper';
 
-import encodeVideo from '@/Api/encode/encodeVideo';
-import '@/Api/encode/encodeVideo';
 import encode from './encode/encode';
 import CommentModel from '@/Model/CommentModel';
 
