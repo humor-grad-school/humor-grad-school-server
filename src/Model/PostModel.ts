@@ -1,12 +1,14 @@
 import { Model } from 'objection';
 import UserModel from './UserModel';
 import CommentModel from './CommentModel';
+import BoardModel from './BoardModel';
 
 export default class PostModel extends Model {
   readonly id!: number;
   title!: string;
   contentS3Key!: string;
   writerId!: number;
+  boardId!: number;
   createAt: Date;
   updateAt: Date;
 
@@ -31,6 +33,14 @@ export default class PostModel extends Model {
       join: {
         from: 'posts.id',
         to: 'comments.writerId',
+      },
+    },
+    board: {
+      relation: Model.BelongsToOneRelation,
+      modelClass: BoardModel,
+      join: {
+        from: 'posts.boardId',
+        to: 'boards.id',
       },
     },
   });

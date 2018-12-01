@@ -2,6 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import UserApiRouter from './UserApiRouter';
 import PostApiRouter from './PostApiRouter';
+import BoardApiRouter from './BoardApiRouter';
 import { ValidationError } from 'class-validator';
 
 export default function run(port: number) {
@@ -16,14 +17,16 @@ export default function run(port: number) {
 
   app.use('/user', UserApiRouter);
   app.use('/post', PostApiRouter);
+  app.use('/board', BoardApiRouter);
 
   app.use((err, req, res, next) => {
     if (err instanceof ValidationError) {
       const validationError = err;
-      return res.send({
+      return res.status(400).send({
         errorCode: Object.values(validationError.constraints)[0],
-      }).status(400);
+      });
     }
+    console.error(err);
     next(err);
   })
 

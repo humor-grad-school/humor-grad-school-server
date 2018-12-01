@@ -7,6 +7,7 @@ import s3Helper from '@/s3Helper';
 
 import encode from './encode/encode';
 import CommentModel from '@/Model/CommentModel';
+import BoardModel from '@/Model/BoardModel';
 
 const router = express.Router();
 
@@ -15,17 +16,20 @@ class PostPostBody {
   writerId: number;
   title: string;
   contentS3Key: string;
+  boardName: string;
 }
 
 router.post('/', validateBody(PostPostBody), async (req, res) => {
   const body = req.body as PostPostBody;
 
-  await PostModel.query().insert({
+  const board = await BoardModel.query().findOne({ name: body.boardName });
+  const post = await PostModel.query().insert({
     title: body.title,
     contentS3Key: body.contentS3Key,
     writerId: body.writerId,
+    boardId: board.id,
   });
-  res.sendStatus(200);
+  res.send(post);
 });
 
 class CommentPostBody {
@@ -96,7 +100,6 @@ router.get('/:id', async (req, res) => {
   if (!post) {
     return res.sendStatus(404);
   }
-  console.log(post);
   res.send(post);
 });
 
