@@ -1,6 +1,7 @@
 import fetch, { Response } from 'node-fetch';
 import fs, { ReadStream } from 'fs';
 import config from '@/config.json';
+import check2xx from './check2xx';
 
 const FormData = require('form-data');
 
@@ -10,15 +11,6 @@ enum ContentType {
   CONTENT = 'content',
   MEDIA = 'media',
 };
-
-export async function check2xx(response: Response) {
-  if (response.status >= 200 && response.status < 300) {
-    return;
-  } else {
-    const text = await response.text();
-    throw new Error(text);
-  }
-}
 
 export interface GetPreSignedUrlResponse {
   url: string;
