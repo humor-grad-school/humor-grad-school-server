@@ -5,12 +5,10 @@ import { s3 } from '@/s3Helper';
 import config from '@/config.json';
 
 export default async function encode(key: string) {
-  console.log('beforeGetObject')
   const { Body: body } = await s3.getObject({
     Bucket: config.BEFORE_ENCODING_S3_BUCKET,
     Key: key,
   }).promise();
-  console.log('afterGetObject')
 
   const { ext, mime } = fileType(body);
 
