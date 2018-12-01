@@ -6,9 +6,11 @@ export default class PostModel extends Model {
   readonly id!: number;
   title!: string;
   contentS3Key!: string;
-  writer!: UserModel;
+  writerId!: number;
   createAt: Date;
   updateAt: Date;
+
+  writer: UserModel;
 
   comments: CommentModel[];
 

@@ -24,10 +24,10 @@ class PostPostBody {
 router.post('/', validateBody(PostPostBody), async (req, res) => {
   const body = req.body as PostPostBody;
 
-  const user = await UserModel.query().findById(body.writerId);
-  await user.$relatedQuery<PostModel>('posts').insert({
+  await PostModel.query().insert({
     title: body.title,
     contentS3Key: body.contentS3Key,
+    writerId: body.writerId,
   });
   res.sendStatus(200);
 });
