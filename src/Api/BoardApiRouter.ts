@@ -1,7 +1,7 @@
-import express from 'express';
+import Router from 'koa-router';
 import BoardModel from '@/Model/BoardModel';
 
-const router = express.Router();
+const router = new Router();
 
 const PAGE_SIZE = 20;
 
@@ -15,33 +15,29 @@ async function getBoardWithPosts(boardName: string, page: number, pageSize: numb
   // });
 }
 
-router.get('/:boardName', (req, res) => {
-  res.redirect(`${req.originalUrl}/page/0`)
-});
-
-router.get('/:boardName/page/:page', async (req, res) => {
-  const { boardName, page = 0 } = req.params;
+router.get(['/:boardName', '/:boardName/page/:page'], async ctx => {
+  const { boardName, page = 0 } = ctx.params;
   const board = await getBoardWithPosts(boardName, page, PAGE_SIZE);
   if (!board) {
-    res.sendStatus(404);
+    ctx.status = 404;
     return;
   }
-  res.send(board);
+  ctx.body = board;
 });
 
-router.post('/:boardName', async (req, res) => {
-  const { boardName } = req.params;
+router.post('/:boardName', async ctx => {
+  const { boardName } = ctx.params;
 
   const isAdmin = true; // TODO
   if (!isAdmin) {
-    return res.sendStatus(403);
+    return ctx.status = 403;
   }
 
   const board = await BoardModel.query().insert({
     name: boardName,
   });
 
-  return res.send(board);
+  return ctx.body = board;
 });
 
 export default router;

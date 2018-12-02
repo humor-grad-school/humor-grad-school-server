@@ -1,4 +1,4 @@
-import express from 'express';
+import Router from 'koa-router';
 import { IsInt } from 'class-validator';
 import config from '@/config.json';
 import PostModel from '@/Model/PostModel';
@@ -9,7 +9,7 @@ import encode from './encode/encode';
 import CommentModel from '@/Model/CommentModel';
 import BoardModel from '@/Model/BoardModel';
 
-const router = express.Router();
+const router = new Router();
 
 class PostPostBody {
   @IsInt({})
@@ -19,8 +19,8 @@ class PostPostBody {
   boardName: string;
 }
 
-router.post('/', validateBody(PostPostBody), async (req, res) => {
-  const body = req.body as PostPostBody;
+router.post('/', validateBody(PostPostBody), async ctx => {
+  const body = ctx.request.body as PostPostBody;
 
   const board = await BoardModel.query().findOne({ name: body.boardName });
   const post = await PostModel.query().insert({
@@ -29,7 +29,7 @@ router.post('/', validateBody(PostPostBody), async (req, res) => {
     writerId: body.writerId,
     boardId: board.id,
   });
-  res.send(post);
+  ctx.body = post;
 });
 
 class CommentPostBody {
@@ -37,39 +37,39 @@ class CommentPostBody {
   contentS3Key: string;
 }
 
-router.post('/:postId/comment', validateBody(CommentPostBody), async (req, res) => {
-  const { postId } = req.params;
+router.post('/:postId/comment', validateBody(CommentPostBody), async ctx => {
+  const { postId } = ctx.params;
 
   await CommentModel.query().insert({
-    writerId: req.body.writerId,
-    contentS3Key: req.body.contentS3Key,
+    writerId: ctx.request.body.writerId,
+    contentS3Key: ctx.request.body.contentS3Key,
     postId,
   });
 
-  res.sendStatus(200);
+  ctx.status = 200;
 });
 
-router.get('/comment/:commentId', validateBody(CommentPostBody), async (req, res) => {
-  const { commentId } = req.params;
+router.get('/comment/:commentId', validateBody(CommentPostBody), async ctx => {
+  const { commentId } = ctx.params;
 
   const comment = await CommentModel.query().findById(commentId);
   if (!comment) {
-    return res.sendStatus(404);
+    return ctx.status = 404;
   }
 
-  res.send(comment);
+  ctx.body = comment;
 });
 
-router.post('/:postId/comment/:parentCommentId', validateBody(CommentPostBody), async (req, res) => {
-  const { postId, parentCommentId } = req.params;
+router.post('/:postId/comment/:parentCommentId', validateBody(CommentPostBody), async ctx => {
+  const { postId, parentCommentId } = ctx.params;
   await CommentModel.query().insert({
-    writerId: req.body.writerId,
-    contentS3Key: req.body.contentS3Key,
+    writerId: ctx.request.body.writerId,
+    contentS3Key: ctx.request.body.contentS3Key,
     postId,
     parentCommentId,
   });
 
-  res.sendStatus(200);
+  ctx.status = 200;
 });
 
 const bucketTypeMap = {
@@ -77,36 +77,36 @@ const bucketTypeMap = {
   media: config.BEFORE_ENCODING_S3_BUCKET,
 }
 
-router.get('/preSignedUrl', async (req, res) => {
-  const { type } = req.query;
+router.get('/preSignedUrl', async ctx => {
+  const { type } = ctx.query;
 
   const bucket = bucketTypeMap[type];
 
   if (!bucket) {
-    return res.sendStatus(404);
+    return ctx.status = 404;
   }
 
   const { fields, url, key } = await s3Helper.createPresignedPost(20, bucket);
-  res.send({
+  ctx.body = {
     fields,
     url,
     key,
-  });
+  };
 });
 
-router.get('/:id', async (req, res) => {
-  const id = req.params.id;
+router.get('/:id', async ctx => {
+  const { id } = ctx.params;
   const post = await PostModel.query().findById(id).eager('comments');
   if (!post) {
-    return res.sendStatus(404);
+    return ctx.status = 404;
   }
-  res.send(post);
+  ctx.body = post;
 });
 
-router.post('/encode/:key', async (req, res) => {
-  const { key } = req.params;
+router.post('/encode/:key', async ctx => {
+  const { key } = ctx.params;
   await encode(key);
-  res.sendStatus(200);
+  ctx.status = 200;
 });
 
 export default router;
