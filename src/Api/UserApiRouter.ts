@@ -23,9 +23,8 @@ class UserPostBody {
   })
   username: string;
 }
-// validateBody(UserPostBody),
 
-router.post('/', async ctx => {
+router.post('/', validateBody(UserPostBody), async ctx => {
   const body = ctx.request.body as UserPostBody;
   const user = await newUser(body.username);
   ctx.body = {
