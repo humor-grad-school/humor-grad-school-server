@@ -27,6 +27,7 @@
     "@types/koa-router": "^7.0.35",
     "@types/node": "^10.12.10",
     "@types/node-fetch": "^2.1.4",
+    "@types/redis": "^2.8.8",
     "nodemon": "^1.18.7",
     "sqlite3": "^4.0.4",
     "typescript": "^3.1.6"
@@ -36,6 +37,7 @@
     "class-validator": "^0.9.1",
     "file-type": "^10.5.0",
     "form-data": "^2.3.3",
+    "google-auth-library": "^2.0.1",
     "knex": "^0.15.2",
     "koa": "^2.6.2",
     "koa-bodyparser": "^4.2.1",
@@ -45,6 +47,7 @@
     "mysql2": "^1.6.4",
     "node-fetch": "^2.3.0",
     "objection": "^1.4.0",
+    "redis": "^2.8.0",
     "sharp": "^0.21.0",
     "uuid": "^3.3.2"
   },

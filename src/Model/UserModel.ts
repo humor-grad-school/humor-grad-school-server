@@ -18,5 +18,5 @@ export default class UserModel extends Model {
         to: 'posts.writerId',
       },
     },
-  })
+  });
 }
