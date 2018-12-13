@@ -12,9 +12,10 @@ const authenticationServices: { [key: string]: IAuthenticationService } = {
   google: new GoogleAuthenticationService(),
 };
 
-async function setSession(ctx: Context, user: UserModel) {
-  const userToken = uuid();
-  await sessionCacheService.set(userToken, user.id);
+async function issueSessionToken(user: UserModel): Promise<string> {
+  const sessionToken = uuid();
+  await sessionCacheService.set(sessionToken, user.id);
+  return sessionToken;
 }
 
 router.post('/:identityType', async ctx => {
@@ -39,7 +40,7 @@ router.post('/:identityType', async ctx => {
 
   if (!identity) {
     // TODO : Need sign in
-    console.warn('Need sign in');
+    console.warn('No identity. Need sign in');
     ctx.status = 401;
     return;
   }
@@ -47,12 +48,16 @@ router.post('/:identityType', async ctx => {
   const user = await identity.getUser();
   if (!user) {
     // TODO : Need sign in
-    console.warn('Need sign in');
+    console.warn('No user with Identity. Need sign in');
     ctx.status = 401;
     return;
   }
 
-  await setSession(ctx, user);
+  const sessionToken = await issueSessionToken(user);
+
+  ctx.body = {
+    sessionToken,
+  };
 });
 
 export default router;

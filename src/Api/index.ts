@@ -6,6 +6,8 @@ import bodyParser from 'koa-bodyparser';
 import UserApiRouter from './UserApiRouter';
 import PostApiRouter from './PostApiRouter';
 import BoardApiRouter from './BoardApiRouter';
+import AuthenticationApiRouter from './AuthenticationApiRouter';
+
 import { ValidationError } from 'class-validator';
 import { isDevelopment } from '..';
 
@@ -32,6 +34,7 @@ export default function run(port: number) {
   mainRouter.use('/user', UserApiRouter.routes());
   mainRouter.use('/post', PostApiRouter.routes());
   mainRouter.use('/board', BoardApiRouter.routes());
+  mainRouter.use('/auth', AuthenticationApiRouter.routes());
 
   app.use(mainRouter.routes());
 
