@@ -7,6 +7,7 @@ import UserApiRouter from './UserApiRouter';
 import PostApiRouter from './PostApiRouter';
 import BoardApiRouter from './BoardApiRouter';
 import { ValidationError } from 'class-validator';
+import { isDevelopment } from '..';
 
 
 
@@ -17,6 +18,11 @@ export default function run(port: number) {
 
 
   const mainRouter = new Router();
+
+  if (isDevelopment) {
+    const cors = require('@koa/cors');
+    app.use(cors());
+  }
 
   mainRouter.get('/', ctx => {
     console.log('hi');
@@ -41,7 +47,6 @@ export default function run(port: number) {
 
     ctx.status = err.status || 500;
     ctx.body = err.message;
-    ctx.app.emit('error', err, ctx);
   });
 
   app.listen(port, () => {
