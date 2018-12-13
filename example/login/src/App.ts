@@ -38,6 +38,10 @@ export default class App extends Vue {
     this.isLoginSuccessful = true;
 
     this.googleUser = googleUser;
+
+    // Procedure : Google login => Send Google Id Token to Humor Server -> OK
+
+    this.loginToHumor(this.googleUser.getAuthResponse().id_token);
   }
 
   private onGoogleLoginFailed({ error }: { error: string }) {
@@ -45,6 +49,26 @@ export default class App extends Vue {
     this.isLoginSuccessful = false;
 
     this.googleLoginError = error;
+  }
+
+  private async loginToHumor(idToken: string) {
+    const response = await fetch('http://localhost:8080/auth/google', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        idToken,
+      }),
+    });
+
+    if (response.status < 200 || response.status > 300) {
+      // fail
+      return;
+    } else {
+      const { sessionToken } = await response.json();
+      console.log('session token : ', sessionToken);
+    }
   }
 }
 
