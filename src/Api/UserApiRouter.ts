@@ -3,6 +3,7 @@ import UserModel from '@/Model/UserModel';
 import { getAuthenticationService } from './AuthenticationService';
 import { transaction } from 'objection';
 import { AuthenticationRequestData } from './AuthenticationService/IAuthenticationService';
+import { passAuthorizationMiddleware } from './AuthorizationPassService';
 
 const router = new Router();
 
@@ -12,7 +13,7 @@ class UserPostBody {
   authenticationRequestData: AuthenticationRequestData;
 }
 
-router.post('/', async ctx => {
+router.post('/', passAuthorizationMiddleware, async ctx => {
   const {
     username,
     origin,
@@ -58,7 +59,7 @@ router.post('/', async ctx => {
   ctx.status = 200;
 });
 
-router.get('/:id', async ctx => {
+router.get('/:id', passAuthorizationMiddleware, async ctx => {
   const id = ctx.params.id;
   const user = await UserModel.query().findById(id);
   if (!user) {

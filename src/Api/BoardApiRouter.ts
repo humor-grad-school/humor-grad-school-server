@@ -1,5 +1,6 @@
 import Router from 'koa-router';
 import BoardModel from '@/Model/BoardModel';
+import { passAuthorizationMiddleware } from './AuthorizationPassService';
 
 const router = new Router();
 
@@ -15,7 +16,7 @@ async function getBoardWithPosts(boardName: string, page: number, pageSize: numb
   // });
 }
 
-router.get(['/:boardName', '/:boardName/page/:page'], async ctx => {
+router.get(['/:boardName', '/:boardName/page/:page'], passAuthorizationMiddleware, async ctx => {
   const { boardName, page = 0 } = ctx.params;
   const board = await getBoardWithPosts(boardName, page, PAGE_SIZE);
   if (!board) {

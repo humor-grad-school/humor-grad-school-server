@@ -7,11 +7,9 @@ import UserApiRouter from './UserApiRouter';
 import PostApiRouter from './PostApiRouter';
 import BoardApiRouter from './BoardApiRouter';
 import AuthenticationApiRouter from './AuthenticationApiRouter';
-
-import { ValidationError } from 'class-validator';
 import { isDevelopment } from '..';
-
-
+import { passAuthorizationMiddleware } from './AuthorizationPassService';
+import AuthorizationPassService from './AuthorizationPassService';
 
 export default function run(port: number) {
   const app = new Koa();
@@ -20,14 +18,17 @@ export default function run(port: number) {
 
 
   const mainRouter = new Router();
+  const authorizationPassService = new AuthorizationPassService(mainRouter);
 
   if (isDevelopment) {
     const cors = require('@koa/cors');
     app.use(cors());
   }
 
-  mainRouter.get('/', ctx => {
-    console.log('hi');
+  mainRouter.use(authorizationPassService.getAuthorizationMiddleware());
+
+  mainRouter.get('/health', passAuthorizationMiddleware, ctx => {
+    console.log('health');
     ctx.body = 'hi';
   });
 
@@ -35,6 +36,9 @@ export default function run(port: number) {
   mainRouter.use('/post', PostApiRouter.routes());
   mainRouter.use('/board', BoardApiRouter.routes());
   mainRouter.use('/auth', AuthenticationApiRouter.routes());
+
+  // Should update this in the end of router definition.
+  authorizationPassService.updatePasssingAuthorizationPathRegExpList();
 
   app.use(mainRouter.routes());
 

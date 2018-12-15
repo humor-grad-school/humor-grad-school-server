@@ -5,6 +5,7 @@ import sessionCacheService from './Cache/sessionCacheService';
 import { ErrorCode } from './ErrorCode';
 import { getAuthenticationService } from './AuthenticationService';
 import { AuthenticationRequestData } from './AuthenticationService/IAuthenticationService';
+import { passAuthorizationMiddleware } from './AuthorizationPassService';
 
 const router = new Router();
 
@@ -14,7 +15,7 @@ async function issueSessionToken(user: UserModel): Promise<string> {
   return sessionToken;
 }
 
-router.post('/:origin', async ctx => {
+router.post('/:origin', passAuthorizationMiddleware, async ctx => {
   const { origin }: { origin : string } = ctx.params;
   const {
     authenticationRequestData,
@@ -44,7 +45,7 @@ router.post('/:origin', async ctx => {
     return;
   }
 
-  let identity = await authenticationService.getIdentity(authResult.identityId)
+  const identity = await authenticationService.getIdentity(authResult.identityId)
     || await authenticationService.createIdentity(authResult);
 
   const user = await identity.getUser();

@@ -8,6 +8,7 @@ import s3Helper from '@/s3Helper';
 import encode from './encode/encode';
 import CommentModel from '@/Model/CommentModel';
 import BoardModel from '@/Model/BoardModel';
+import { passAuthorizationMiddleware } from './AuthorizationPassService';
 
 const router = new Router();
 
@@ -49,7 +50,7 @@ router.post('/:postId/comment', validateBody(CommentPostBody), async ctx => {
   ctx.status = 200;
 });
 
-router.get('/comment/:commentId', validateBody(CommentPostBody), async ctx => {
+router.get('/comment/:commentId', passAuthorizationMiddleware, validateBody(CommentPostBody), async ctx => {
   const { commentId } = ctx.params;
 
   const comment = await CommentModel.query().findById(commentId);
@@ -94,7 +95,7 @@ router.get('/preSignedUrl', async ctx => {
   };
 });
 
-router.get('/:id', async ctx => {
+router.get('/:id', passAuthorizationMiddleware, async ctx => {
   const { id } = ctx.params;
   const post = await PostModel.query().findById(id).eager('comments');
   if (!post) {
