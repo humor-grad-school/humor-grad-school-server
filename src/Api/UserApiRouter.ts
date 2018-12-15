@@ -1,35 +1,61 @@
 import Router from 'koa-router';
-import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } from 'class-validator';
 import UserModel from '@/Model/UserModel';
-import { ErrorCode } from './ErrorCode';
-import validateBody from './validateBody';
+import { getAuthenticationService } from './AuthenticationService';
+import { transaction } from 'objection';
+import { AuthenticationRequestData } from './AuthenticationService/IAuthenticationService';
 
 const router = new Router();
 
-async function newUser(username): Promise<UserModel> {
-  try {
-    return await UserModel.query().insert({
-      username,
-    });
-  } catch (err) {
-    // TODO
-    throw err;
-  }
-}
-
 class UserPostBody {
-  @Length(2, 8, {
-    message: ErrorCode.WrongUserName,
-  })
   username: string;
+  origin: string;
+  authenticationRequestData: AuthenticationRequestData;
 }
 
-router.post('/', validateBody(UserPostBody), async ctx => {
-  const body = ctx.request.body as UserPostBody;
-  const user = await newUser(body.username);
-  ctx.body = {
-    id: user.id,
-  };
+router.post('/', async ctx => {
+  const {
+    username,
+    origin,
+    authenticationRequestData,
+  } = ctx.request.body as UserPostBody;
+
+  const authenticationService = getAuthenticationService(origin);
+
+  if (!authenticationService) {
+    // wrong origin
+    ctx.status = 404;
+    return;
+  }
+
+  const authResult = await authenticationService.authenticateRequest(authenticationRequestData);
+
+  if (!authResult) {
+    // TODO
+    ctx.status = 401;
+    return;
+  }
+
+  const identity = await authenticationService.getIdentity(authResult.identityId);
+  if (!identity) {
+    // identity should be there!
+    ctx.status = 404;
+    return;
+  }
+
+  try {
+    await transaction(UserModel.knex(), async (trx) => {
+      const user = await UserModel.query(trx).insert({
+        username,
+      });
+      await identity.$relatedQuery<UserModel>('user', trx).relate(user);
+    });
+  } catch(err) {
+    // failed to create user or relate identity to that
+    ctx.status = 500;
+    return;
+  }
+
+  ctx.status = 200;
 });
 
 router.get('/:id', async ctx => {

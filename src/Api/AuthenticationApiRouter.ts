@@ -1,16 +1,12 @@
 import Router from 'koa-router';
-import IAuthenticationService from './AuthenticationService/IAuthenticationService';
-import GoogleAuthenticationService from './AuthenticationService/GoogleAuthenticationService';
-import { Context } from 'koa';
 import UserModel from '@/Model/UserModel';
 import uuid from 'uuid/v4';
 import sessionCacheService from './Cache/sessionCacheService';
+import { ErrorCode } from './ErrorCode';
+import { getAuthenticationService } from './AuthenticationService';
+import { AuthenticationRequestData } from './AuthenticationService/IAuthenticationService';
 
 const router = new Router();
-
-const authenticationServices: { [key: string]: IAuthenticationService } = {
-  google: new GoogleAuthenticationService(),
-};
 
 async function issueSessionToken(user: UserModel): Promise<string> {
   const sessionToken = uuid();
@@ -18,38 +14,47 @@ async function issueSessionToken(user: UserModel): Promise<string> {
   return sessionToken;
 }
 
-router.post('/:identityType', async ctx => {
-  const { identityType } = ctx.params;
-  const authenticationService = authenticationServices[identityType];
+router.post('/:origin', async ctx => {
+  const { origin }: { origin : string } = ctx.params;
+  const {
+    authenticationRequestData,
+  }:{
+    authenticationRequestData: AuthenticationRequestData,
+  } = ctx.request.body;
+
+  const authenticationService = getAuthenticationService(origin);
 
   if (!authenticationService) {
-    console.warn('wrong identityType - ', identityType);
+    console.warn('wrong identityType - ', origin);
     ctx.status = 400;
+    ctx.body = {
+      errorCode: ErrorCode.AuthenticateErrorCode.WrongIdentityType,
+    };
     return;
   }
 
-  const authResult = await authenticationService.authenticateRequest(ctx.request);
+  const authResult = await authenticationService.authenticateRequest(authenticationRequestData);
 
   if (!authResult) {
     console.warn('authentication failed'); // TODO : Add more Information
     ctx.status = 401;
+    ctx.body = {
+      errorCode: ErrorCode.AuthenticateErrorCode.AuthenticationFailed,
+    };
     return;
   }
 
-  let identity = await authenticationService.getIdentity(authResult);
-
-  if (!identity) {
-    // TODO : Need sign in
-    console.warn('No identity. Need sign in');
-    ctx.status = 401;
-    return;
-  }
+  let identity = await authenticationService.getIdentity(authResult.identityId)
+    || await authenticationService.createIdentity(authResult);
 
   const user = await identity.getUser();
   if (!user) {
     // TODO : Need sign in
     console.warn('No user with Identity. Need sign in');
     ctx.status = 401;
+    ctx.body = {
+      errorCode: ErrorCode.AuthenticateErrorCode.NoUser,
+    };
     return;
   }
 

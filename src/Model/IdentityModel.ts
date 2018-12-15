@@ -22,7 +22,7 @@ export default class IdentityModel extends Model {
   static tableName = 'identities';
 
   static relationMappings = () => ({
-    posts: {
+    user: {
       relation: Model.BelongsToOneRelation,
       modelClass: UserModel,
       join: {
