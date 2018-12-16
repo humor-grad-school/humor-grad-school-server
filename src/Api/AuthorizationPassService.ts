@@ -42,6 +42,6 @@ export default class AuthorizationPassService {
   }
 }
 
-export function passAuthorizationMiddleware(ctx, next) {
-  next();
+export async function passAuthorizationMiddleware(ctx, next) {
+  return await next();
 }
