@@ -1,8 +1,10 @@
 import GoogleAuthenticationService from "./GoogleAuthenticationService";
-import IAuthenticationService from "./IAuthenticationService";
+import IAuthenticationService from "./BaseAuthenticationService";
+import KakaoAuthenticationService from "./KakaoAuthenticationService";
 
 const authenticationServices = [
   new GoogleAuthenticationService(),
+  new KakaoAuthenticationService(),
 ];
 
 const authenticationServiceMap = authenticationServices.reduce((prev, authenticationService) => {

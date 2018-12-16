@@ -1,16 +1,15 @@
-import { Request } from "koa";
 import IdentityModel from "@/Model/IdentityModel";
-import IOpenIdAuthenticationService, { ITokenVerificationResult } from "./IOpenIdAuthenticationService";
+import BaseAuthenticationService, { IAuthResult } from "./BaseAuthenticationService";
 
 export interface OpenIdAuthenticationRequestData {
   idToken: string;
 }
 
-export default abstract class BaseOpenIdAuthenticationService implements IOpenIdAuthenticationService {
+export default abstract class BaseOpenIdAuthenticationService extends BaseAuthenticationService {
   abstract getOrigin(): string;
-  async createIdentity(authResult: ITokenVerificationResult): Promise<IdentityModel> {
+  async createIdentity(authResult: IAuthResult): Promise<IdentityModel> {
     return await IdentityModel.query().insertAndFetch({
-      id: authResult.sub,
+      id: authResult.identityId,
       origin: this.getOrigin(),
     });
   }
@@ -18,8 +17,8 @@ export default abstract class BaseOpenIdAuthenticationService implements IOpenId
     const identity =  await IdentityModel.query().findById(identityId);
     return identity;
   }
-  abstract verifyIdToken(idToken: string): Promise<ITokenVerificationResult>;
-  async authenticateRequest(request: OpenIdAuthenticationRequestData): Promise<ITokenVerificationResult> {
+  abstract verifyIdToken(idToken: string): Promise<IAuthResult>;
+  async authenticateRequest(request: OpenIdAuthenticationRequestData): Promise<IAuthResult> {
     const { idToken } = request;
     const tokenVerificationResult = await this.verifyIdToken(idToken);
     return tokenVerificationResult;

@@ -2,7 +2,7 @@ import Router from 'koa-router';
 import UserModel from '@/Model/UserModel';
 import { getAuthenticationService } from './AuthenticationService';
 import { transaction } from 'objection';
-import { AuthenticationRequestData } from './AuthenticationService/IAuthenticationService';
+import { AuthenticationRequestData } from './AuthenticationService/BaseAuthenticationService';
 import { passAuthorizationMiddleware } from './AuthorizationPassService';
 
 const router = new Router();

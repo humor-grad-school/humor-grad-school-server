@@ -1,7 +1,7 @@
 import { Request } from "koa";
 import { OAuth2Client } from 'google-auth-library';
-import { ITokenVerificationResult } from "./IOpenIdAuthenticationService";
 import BaseOpenIdAuthenticationService from "./BaseOpenIdAuthenticationService";
+import { IAuthResult } from "./BaseAuthenticationService";
 
 // TODO : Move google client id to config
 const GOOGLE_CLIENT_ID = '74489406824-dlmplsl075187spamd9a4m6g90ah56so.apps.googleusercontent.com';
@@ -11,7 +11,7 @@ export default class GoogleAuthenticationService extends BaseOpenIdAuthenticatio
   getOrigin(): string {
     return 'google';
   }
-  async verifyIdToken(idToken: string): Promise<ITokenVerificationResult> {
+  async verifyIdToken(idToken: string): Promise<IAuthResult> {
     try {
       const ticket = await client.verifyIdToken({
         idToken,
@@ -19,8 +19,7 @@ export default class GoogleAuthenticationService extends BaseOpenIdAuthenticatio
       });
       const userId = ticket.getUserId();
       return {
-        sub: userId,
-        identityId: userId,
+        identityId: this.generateIdentityId(userId),
       };
     } catch(err) {
       return null;
