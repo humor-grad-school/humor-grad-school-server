@@ -1,5 +1,5 @@
 import { Component } from 'vue-property-decorator';
-import loadKakaoApi from './loadKakaoApi';
+import loadKakaoSdk from './loadKakaoSdk';
 import BaseLoginComponent from '@/BaseLoginComponent';
 
 declare var Kakao: any;
@@ -11,7 +11,7 @@ export default class KakaoLoginComponent extends BaseLoginComponent {
   public loginButtonElementId = 'kakao-login-btn';
 
   public mounted() {
-    loadKakaoApi().then(() => {
+    loadKakaoSdk().then(() => {
       console.log('kakao loaded');
       this.isKakaoApiLoaded = true;
       Kakao.Auth.createLoginButton({

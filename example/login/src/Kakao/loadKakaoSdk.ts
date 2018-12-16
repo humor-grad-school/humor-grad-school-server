@@ -4,7 +4,7 @@ let promise: Promise<any>;
 declare var Kakao: any;
 
 const id = 'kakao-jssdk';
-export default function loadKakaoApi() {
+export default function loadKakaoSdk() {
   if (!promise) {
     promise = loadExternalJsASync(id, '//developers.kakao.com/sdk/js/kakao.min.js')
       .then(() => {
