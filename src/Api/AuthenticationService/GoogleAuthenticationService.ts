@@ -1,4 +1,3 @@
-import { Request } from "koa";
 import { OAuth2Client } from 'google-auth-library';
 import BaseOpenIdAuthenticationService from "./BaseOpenIdAuthenticationService";
 import { IAuthResult } from "./BaseAuthenticationService";

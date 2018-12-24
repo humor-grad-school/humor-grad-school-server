@@ -4,6 +4,9 @@
     <KakaoLoginComponent
       @login-humor="loginToHumor"
     ></KakaoLoginComponent>
+    <FacebookLoginComponent
+      @login-humor="loginToHumor"
+    ></FacebookLoginComponent>
 
     <div v-if="isNeedSignUp">
       <h1>More information Please To Finish Sign Up</h1>

@@ -1,6 +1,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 
 import KakaoLoginComponent from './Kakao/KakaoLoginComponent.vue';
+import FacebookLoginComponent from './Facebook/FacebookLoginComponent.vue';
 import login from './Api/login';
 import { ErrorCode } from '../../../src/Api/ErrorCode';
 
@@ -11,6 +12,7 @@ export function is2xx(response: Response) {
 @Component({
   components: {
     KakaoLoginComponent,
+    FacebookLoginComponent,
   },
 })
 export default class App extends Vue {

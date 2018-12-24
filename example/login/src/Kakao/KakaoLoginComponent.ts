@@ -7,13 +7,11 @@ declare var Kakao: any;
 @Component
 export default class KakaoLoginComponent extends BaseLoginComponent {
   public origin: string = 'kakao';
-  public isKakaoApiLoaded = false;
   public loginButtonElementId = 'kakao-login-btn';
 
   public mounted() {
     loadKakaoSdk().then(() => {
       console.log('kakao loaded');
-      this.isKakaoApiLoaded = true;
       Kakao.Auth.createLoginButton({
         container: '#kakao-login-btn',
         success: (authObj: any) => {
