@@ -15,6 +15,9 @@
         <button @click="signUp">sign up</button>
       </div>
     </div>
+    <div v-if="isLoginSuccessful">
+      <button @click="runTest">Run Test</button>
+    </div>
   </div>
 </template>
 <script lang="ts" src="./App.ts"></script>

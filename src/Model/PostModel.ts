@@ -9,6 +9,8 @@ export default class PostModel extends Model {
   contentS3Key!: string;
   writerId!: number;
   boardId!: number;
+  likes: number;
+
   createAt: Date;
   updateAt: Date;
 
@@ -43,5 +45,17 @@ export default class PostModel extends Model {
         to: 'boards.id',
       },
     },
+    likers: {
+      relation: Model.ManyToManyRelation,
+      modelClass: UserModel,
+      join: {
+        from: 'posts.id',
+        through: {
+          from: 'postLikes.postId',
+          to: 'postLikes.userId',
+        },
+        to: 'users.id'
+      }
+    }
   });
 }

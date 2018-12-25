@@ -4,6 +4,7 @@ import KakaoLoginComponent from './Kakao/KakaoLoginComponent.vue';
 import FacebookLoginComponent from './Facebook/FacebookLoginComponent.vue';
 import login from './Api/login';
 import { ErrorCode } from '../../../src/Api/ErrorCode';
+import { runTest } from './test/test';
 
 export function is2xx(response: Response) {
   return response.status >= 200 && response.status < 300;
@@ -20,6 +21,7 @@ export default class App extends Vue {
   public authenticationRequestData: any;
   public origin: string = '';
   public username: string = '';
+  public isLoginSuccessful = false;
 
   public async signUp() {
     const response = await fetch('http://localhost:8080/user', {
@@ -59,6 +61,7 @@ export default class App extends Vue {
     this.origin = origin;
     try {
       await login(this.authenticationRequestData, this.origin);
+      this.isLoginSuccessful = true;
     } catch(errorCode) {
       console.error(errorCode);
       switch (errorCode) {
@@ -78,5 +81,9 @@ export default class App extends Vue {
         }
       }
     }
+  }
+
+  public async runTest() {
+    await runTest();
   }
 }

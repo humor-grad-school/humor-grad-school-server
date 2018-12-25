@@ -1,7 +1,7 @@
 import Router from 'koa-router';
 import UserModel from '@/Model/UserModel';
 import uuid from 'uuid/v4';
-import sessionCacheService from './Cache/sessionCacheService';
+import sessionCacheService, { ISession } from './Cache/sessionCacheService';
 import { ErrorCode } from './ErrorCode';
 import { getAuthenticationService } from './AuthenticationService';
 import { AuthenticationRequestData } from './AuthenticationService/BaseAuthenticationService';
@@ -11,7 +11,10 @@ const router = new Router();
 
 async function issueSessionToken(user: UserModel): Promise<string> {
   const sessionToken = uuid();
-  await sessionCacheService.set(sessionToken, user.id);
+  const session: ISession = {
+    userId: user.id,
+  };
+  await sessionCacheService.set(sessionToken, session);
   return sessionToken;
 }
 

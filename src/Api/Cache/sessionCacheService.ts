@@ -3,12 +3,12 @@ import RedisCache from "./RedisCache";
 import ICache from "./ICache";
 
 export interface ISession {
-
+  userId: number;
 }
 
 class SessionCacheService implements ICache<ISession> {
-  private memoryCache = new MemoryCache();
-  private redisCache = new RedisCache();
+  private memoryCache = new MemoryCache<ISession>();
+  private redisCache = new RedisCache<ISession>();
 
   async get(key: string): Promise<ISession> {
     const valueInMemory = await this.memoryCache.get(key);

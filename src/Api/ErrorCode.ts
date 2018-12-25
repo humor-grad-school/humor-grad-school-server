@@ -8,5 +8,9 @@ export namespace ErrorCode {
     NoUser = 'NoUser',
     AuthenticationFailed = 'AuthenticationFailed',
   };
+
+  export enum PostLikeErrorCode {
+    AlreadyLiked = 'AlreadyLiked',
+  };
 }
 
