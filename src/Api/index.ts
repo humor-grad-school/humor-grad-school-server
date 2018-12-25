@@ -6,6 +6,7 @@ import bodyParser from 'koa-bodyparser';
 import UserApiRouter from './UserApiRouter';
 import PostApiRouter from './PostApiRouter';
 import BoardApiRouter from './BoardApiRouter';
+import CommentApiRouter from './CommentApiRouter';
 import AuthenticationApiRouter from './AuthenticationApiRouter';
 import { isDevelopment } from '..';
 import { passAuthorizationMiddleware } from './AuthorizationPassService';
@@ -36,6 +37,7 @@ export default function run(port: number) {
   mainRouter.use('/post', PostApiRouter.routes());
   mainRouter.use('/board', BoardApiRouter.routes());
   mainRouter.use('/auth', AuthenticationApiRouter.routes());
+  mainRouter.use('/comment', CommentApiRouter.routes());
 
   // Should update this in the end of router definition.
   authorizationPassService.updatePasssingAuthorizationPathRegExpList();
