@@ -56,6 +56,6 @@ export default class PostModel extends Model {
         },
         to: 'users.id'
       }
-    }
+    },
   });
 }

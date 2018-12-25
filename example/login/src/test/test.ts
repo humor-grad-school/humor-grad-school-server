@@ -2,6 +2,7 @@ import writeTest from './postTest';
 import { is2xx } from '@/App';
 import likePost from './likePost';
 import { getSessionToken } from '@/utils/sessionToken';
+import writeAndLikeCommentTest from './writeAndLikeCommentTest';
 
 const serverUrl = 'http://localhost:8080';
 
@@ -64,4 +65,5 @@ export async function check2xx(response: Response) {
 export async function runTest() {
   const post = await writeTest();
   await likePost(post.id);
+  await writeAndLikeCommentTest(post.id);
 }

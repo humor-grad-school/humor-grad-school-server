@@ -8,6 +8,8 @@ export default class CommentModel extends Model {
   postId!: number;
   parentCommentId: number;
   contentS3Key!: string;
+  likes: number;
+
   createAt: Date;
   updateAt: Date;
 
@@ -36,6 +38,18 @@ export default class CommentModel extends Model {
       join: {
         from: 'comments.id',
         to: 'comments.parentCommentId',
+      }
+    },
+    likers: {
+      relation: Model.ManyToManyRelation,
+      modelClass: UserModel,
+      join: {
+        from: 'comments.id',
+        through: {
+          from: 'commentLikes.commentId',
+          to: 'commentLikes.userId',
+        },
+        to: 'users.id'
       }
     },
   });
