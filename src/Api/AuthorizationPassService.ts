@@ -12,10 +12,11 @@ export default class AuthorizationPassService {
         return next();
       }
 
-      console.log(`you need seesion to call this api : ${ctx.path}`);
+      console.log(`you need seesion to call this api : ${ctx.request.method} ${ctx.path}`);
+
       const sessionToken = ctx.request.method === 'GET'
         ? ctx.params.sessionToken
-        : ctx.body.sessionToken;
+        : ctx.request.body.sessionToken;
 
       if (!sessionToken) {
         ctx.status = 401;
