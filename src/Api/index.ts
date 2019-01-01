@@ -1,6 +1,7 @@
 import Koa from 'koa';
 import Router from 'koa-router';
 import logger from 'koa-logger';
+import graphqlHTTP from 'koa-graphql';
 
 import bodyParser from 'koa-bodyparser';
 import UserApiRouter from './UserApiRouter';
@@ -11,6 +12,7 @@ import AuthenticationApiRouter from './AuthenticationApiRouter';
 import { isDevelopment } from '..';
 import { passAuthorizationMiddleware } from './AuthorizationPassService';
 import AuthorizationPassService from './AuthorizationPassService';
+import { schema } from './graphql/graphql';
 
 export default function run(port: number) {
   const app = new Koa();
@@ -38,6 +40,11 @@ export default function run(port: number) {
   mainRouter.use('/board', BoardApiRouter.routes());
   mainRouter.use('/auth', AuthenticationApiRouter.routes());
   mainRouter.use('/comment', CommentApiRouter.routes());
+
+  mainRouter.all('/graphql', passAuthorizationMiddleware, graphqlHTTP({
+    schema,
+    graphiql: isDevelopment,
+  }));
 
   // Should update this in the end of router definition.
   authorizationPassService.updatePasssingAuthorizationPathRegExpList();
