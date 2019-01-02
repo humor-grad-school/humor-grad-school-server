@@ -10,8 +10,8 @@ export default class CommentModel extends Model {
   contentS3Key!: string;
   likes: number;
 
-  createAt: Date;
-  updateAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
 
   static tableName = 'comments';
 

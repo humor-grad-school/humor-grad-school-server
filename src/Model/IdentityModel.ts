@@ -6,8 +6,8 @@ export default class IdentityModel extends Model {
   userId?: number;
   origin?: string; // google, naver, kakao
 
-  createAt: Date;
-  updateAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
 
   private user: UserModel;
   public async getUser(): Promise<UserModel> {

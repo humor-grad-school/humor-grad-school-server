@@ -4,8 +4,8 @@ import PostModel from './PostModel';
 export default class BoardModel extends Model {
   readonly id!: number;
   name!: string;
-  createAt: Date;
-  updateAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
 
   posts: PostModel[];
 

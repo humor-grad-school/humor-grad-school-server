@@ -10,7 +10,8 @@
     "watch-build": "tsc -w",
     "watch-start": "nodemon --watch dist dist/index.js",
     "start": "node dist/index.js",
-    "gen": "gql-gen --config codegen.yml"
+    "gen": "gql-gen --config codegen.yml",
+    "watch-gen": "gql-gen --watch --config codegen.yml"
   },
   "repository": {
     "type": "git",

@@ -7,12 +7,18 @@ import {
   GraphQLSchema,
   GraphQLBoolean,
   GraphQLObjectTypeConfig,
+  GraphQLNonNull,
+  GraphQLScalarType,
 } from 'graphql'
 import { knex } from '@/dbHelper';
 import { GraphQLAllTypes } from '@/generated/graphql';
 import { IRouterContext } from 'koa-router';
 
 
+const DateType = new GraphQLScalarType({
+  name: 'Date',
+  serialize: (value) => value,
+});
 
 const User = new GraphQLObjectType({
   name: 'User',
@@ -20,16 +26,16 @@ const User = new GraphQLObjectType({
   sqlTable: 'users',
   fields: () => ({
     id: {
-      type: GraphQLInt,
+      type: new GraphQLNonNull(GraphQLInt),
     },
     username: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
     },
-    createAt: {
-      type: GraphQLString,
+    createdAt: {
+      type: new GraphQLNonNull(DateType),
     },
     posts: {
-      type: new GraphQLList(Post),
+      type: new GraphQLNonNull(new GraphQLList(Post)),
       sqlJoin: (userTable, postTable) => `${userTable}.id = ${postTable}.writerId`,
     },
   }),
@@ -41,27 +47,27 @@ const Post = new GraphQLObjectType({
   uniqueKey: 'id',
   fields: () => ({
     id: {
-      type: GraphQLInt,
+      type: new GraphQLNonNull(GraphQLInt),
     },
     title: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
     },
     contentS3Key: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
     },
     writer: {
-      type: new GraphQLList(User),
+      type: new GraphQLNonNull(User),
       sqlJoin: (postTable, userTable) => `${postTable}.writerId = ${userTable}.id`,
     },
     board: {
-      type: new GraphQLList(Board),
+      type: new GraphQLNonNull(Board),
       sqlJoin: (postTable, boardTable) => `${postTable}.boardId = ${boardTable}.id`,
     },
     likes: {
-      type: GraphQLInt,
+      type: new GraphQLNonNull(GraphQLInt),
     },
     isLiked: {
-      type: GraphQLBoolean,
+      type: new GraphQLNonNull(GraphQLBoolean),
       sqlExpr: (postTable, args, context) => {
         if (!context.session) {
           return 'false';
@@ -76,14 +82,14 @@ const Post = new GraphQLObjectType({
       }
     },
     comments: {
-      type: new GraphQLList(Comment),
+      type: new GraphQLNonNull(new GraphQLList(Comment)),
       sqlJoin: (postTable, commentTable) => `${postTable}.id = ${commentTable}.postId`,
     },
-    createAt: {
-      type: GraphQLString,
+    createdAt: {
+      type: new GraphQLNonNull(DateType),
     },
     updatedAt: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(DateType),
     },
   }),
 } as GraphQLObjectTypeConfig<any, IRouterContext>);
@@ -94,27 +100,31 @@ const Comment = new GraphQLObjectType({
   uniqueKey: 'id',
   fields: () => ({
     id: {
-      type: GraphQLInt,
+      type: new GraphQLNonNull(GraphQLInt),
     },
     writer: {
-      type: new GraphQLList(User),
+      type: new GraphQLNonNull(User),
       sqlJoin: (commentTable, userTable) => `${commentTable}.writerId = ${userTable}.id`,
     },
     parentComment: {
-      type: new GraphQLList(Comment),
+      type: new GraphQLNonNull(Comment),
       sqlJoin: (commentTable) => `${commentTable}.parentCommentId = ${commentTable}.id`,
     },
+    post : {
+      type: new GraphQLNonNull(Post),
+      sqlJoin: (commentTable, postTable) => `${commentTable}.postId = ${postTable}.id`,
+    },
     contentS3Key: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
     },
     likes: {
-      type: GraphQLInt,
+      type: new GraphQLNonNull(GraphQLInt),
     },
-    createAt: {
-      type: GraphQLString,
+    createdAt: {
+      type: new GraphQLNonNull(DateType),
     },
     updatedAt: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(DateType),
     },
   }),
 });
@@ -125,19 +135,19 @@ const Board = new GraphQLObjectType({
   uniqueKey: 'id',
   fields: () => ({
     id: {
-      type: GraphQLInt,
+      type: new GraphQLNonNull(GraphQLInt),
     },
     name: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
     },
     posts: {
-      type: new GraphQLList(Post),
+      type: new GraphQLNonNull(new GraphQLList(Post)),
       args: {
         page: {
-          type: GraphQLInt,
+          type: new GraphQLNonNull(GraphQLInt),
         },
         pageSize: {
-          type: GraphQLInt,
+          type: new GraphQLNonNull(GraphQLInt),
         },
       },
       limit: 5,
@@ -146,11 +156,11 @@ const Board = new GraphQLObjectType({
       },
       sqlJoin: (boardTable, postTable) => `${boardTable}.id = ${postTable}.boardId`,
     },
-    createAt: {
-      type: GraphQLString,
+    createdAt: {
+      type: new GraphQLNonNull(DateType),
     },
     updatedAt: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(DateType),
     },
   }),
 });
@@ -161,7 +171,7 @@ export const Query = new GraphQLObjectType({
     user: {
       type: User,
       args: {
-        id: { type: GraphQLInt }
+        id: { type: new GraphQLNonNull(GraphQLInt) },
       },
       where: (usersTable, args) => `${usersTable}.id = ${args.id}`,
       resolve: (parent, args, context, resolveInfo) => {
@@ -174,9 +184,10 @@ export const Query = new GraphQLObjectType({
       },
     },
     boards: {
-      type: new GraphQLList(Board),
+      type: new GraphQLNonNull(new GraphQLList(Board)),
       resolve: (parent, args, context, resolveInfo) => {
         return joinMonster(resolveInfo, context, async sql => {
+          console.log(sql);
           const result = await knex.raw(sql);
           return result[0];
         }, {
@@ -187,7 +198,7 @@ export const Query = new GraphQLObjectType({
     board: {
       type: Board,
       args: {
-        name: { type: GraphQLString }
+        name: { type: new GraphQLNonNull(GraphQLString) },
       },
       where: (usersTable, args) => `${usersTable}.name = "${args.name}"`,
       resolve: (parent, args, context, resolveInfo) => {
@@ -267,4 +278,6 @@ function testSchema() {
   }
 }
 
-// testSchema();
+testSchema();
+
+// TODO : check arguments
