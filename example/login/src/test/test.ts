@@ -9,28 +9,14 @@ const serverUrl = 'http://localhost:8080';
 export async function request(relativeUrl: string, method = 'GET', body: any = null) {
   const sessionToken = getSessionToken();
 
-  let bodyString: any;
-
-  if (method === 'GET') {
-    bodyString = null;
-  } else {
-    const newBody = body || {};
-    newBody.sessionToken = sessionToken;
-
-    bodyString = JSON.stringify(newBody);
-  }
-
-  console.log(bodyString);
-
-  const url = relativeUrl.includes('?')
-    ? `${serverUrl}/${relativeUrl}&sessionToken=${sessionToken}`
-    : `${serverUrl}/${relativeUrl}?sessionToken=${sessionToken}`;
+  const url = `${serverUrl}/${relativeUrl}`;
 
   const response = await fetch(url, {
     method,
-    body: bodyString,
+    body: method === 'GET' ? null : JSON.stringify(body || {}),
     headers: {
       'content-type': 'application/json',
+      'Authorization': `sessionToken ${sessionToken}`,
     },
   });
 

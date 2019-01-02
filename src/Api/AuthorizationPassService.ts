@@ -1,4 +1,4 @@
-import Router from 'koa-router';
+import Router, { IRouterContext } from 'koa-router';
 import sessionCacheService from './Cache/sessionCacheService';
 
 export default class AuthorizationPassService {
@@ -6,17 +6,28 @@ export default class AuthorizationPassService {
   constructor(private router: Router) {
   }
   getAuthorizationMiddleware() {
-    return async (ctx, next) => {
+    return async (ctx: IRouterContext, next) => {
       const isPassablePath = this.passingAuthorizationPathRegExpList.some(regexp => regexp.test(ctx.path));
-      if (isPassablePath) {
-        return next();
+
+      const authorizationHeader: string = (
+        ctx.request.headers.authorization
+        || ctx.request.headers.Authorization
+      ).toLowerCase();
+
+      if (!authorizationHeader) {
+        if (isPassablePath) {
+          return next();
+        }
+        ctx.status = 401;
+        return;
       }
 
-      console.log(`you need seesion to call this api : ${ctx.request.method} ${ctx.path}`);
+      if (authorizationHeader.indexOf('sessiontoken ') !== 0) {
+        ctx.status = 401;
+        return;
+      }
 
-      const sessionToken = ctx.request.method === 'GET'
-        ? ctx.params.sessionToken
-        : ctx.request.body.sessionToken;
+      const sessionToken = authorizationHeader.substring('sessiontoken '.length);
 
       if (!sessionToken) {
         ctx.status = 401;
