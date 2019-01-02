@@ -279,5 +279,3 @@ function testSchema() {
 }
 
 testSchema();
-
-// TODO : check arguments

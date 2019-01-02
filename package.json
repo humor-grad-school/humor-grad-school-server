@@ -8,8 +8,8 @@
     "build": "tsc",
     "postinstall": "npm run gen",
     "watch-build": "tsc -w",
-    "watch-start": "nodemon --watch dist dist/index.js",
-    "start": "node dist/index.js",
+    "watch-start": "nodemon --watch dist dist/local.js",
+    "start": "node dist/local.js",
     "gen": "gql-gen --config codegen.yml",
     "watch-gen": "gql-gen --watch --config codegen.yml"
   },
@@ -33,6 +33,7 @@
     "@types/node-fetch": "^2.1.4",
     "@types/redis": "^2.8.8",
     "nodemon": "^1.18.7",
+    "serverless": "^1.35.1",
     "typescript": "^3.1.6"
   },
   "dependencies": {
@@ -57,6 +58,7 @@
     "node-fetch": "^2.3.0",
     "objection": "^1.4.0",
     "redis": "^2.8.0",
+    "serverless-http": "^1.8.0",
     "sharp": "^0.21.0",
     "uuid": "^3.3.2"
   },

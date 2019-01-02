@@ -14,8 +14,9 @@ import { passAuthorizationMiddleware } from './AuthorizationPassService';
 import AuthorizationPassService from './AuthorizationPassService';
 import { schema } from './graphql/graphql';
 
-export default function run(port: number) {
-  const app = new Koa();
+export const app = new Koa();
+
+export function init() {
   app.use(logger());
   app.use(bodyParser());
 
@@ -63,9 +64,5 @@ export default function run(port: number) {
 
     ctx.status = err.status || 500;
     ctx.body = err.message;
-  });
-
-  app.listen(port, () => {
-    console.log(`server listen ${port}`)
   });
 }
