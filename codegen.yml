@@ -1,0 +1,7 @@
+overwrite: true
+schema: graphql-schema/schema.graphql
+documents: null
+generates:
+  src/generated/graphql.ts:
+    plugins:
+      - graphql-codegen-all-types

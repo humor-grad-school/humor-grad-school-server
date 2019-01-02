@@ -6,9 +6,11 @@
   "scripts": {
     "test": "node dist/runTest.js",
     "build": "tsc",
+    "postinstall": "npm run gen",
     "watch-build": "tsc -w",
     "watch-start": "nodemon --watch dist dist/index.js",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "gen": "gql-gen --config codegen.yml"
   },
   "repository": {
     "type": "git",
@@ -40,6 +42,8 @@
     "form-data": "^2.3.3",
     "google-auth-library": "^2.0.1",
     "graphql": "^0.13.2",
+    "graphql-code-generator": "^0.15.2",
+    "graphql-codegen-all-types": "^1.0.1",
     "join-monster2": "^2.1.0",
     "knex": "^0.15.2",
     "koa": "^2.6.2",

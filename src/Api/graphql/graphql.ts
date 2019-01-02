@@ -4,9 +4,12 @@ import {
   GraphQLList,
   GraphQLString,
   GraphQLInt,
-  GraphQLSchema
+  GraphQLSchema,
 } from 'graphql'
 import { knex } from '@/dbHelper';
+import { GraphQLAllTypes } from '@/generated/graphql';
+
+
 
 const User = new GraphQLObjectType({
   name: 'User',
@@ -28,7 +31,6 @@ const User = new GraphQLObjectType({
     },
   }),
 });
-
 
 const Post = new GraphQLObjectType({
   name: 'Post',
@@ -161,7 +163,6 @@ export const Query = new GraphQLObjectType({
       where: (usersTable, args) => `${usersTable}.name = "${args.name}"`,
       resolve: (parent, args, context, resolveInfo) => {
         return joinMonster(resolveInfo, {}, async sql => {
-          console.log(sql);
           const result = await knex.raw(sql);
           return result[0];
         }, {
@@ -175,3 +176,66 @@ export const Query = new GraphQLObjectType({
 export const schema = new GraphQLSchema({
   query: Query,
 });
+
+function getAllTypesOfSchema(schema: GraphQLSchema): Array<{ name: string; fields: Array<{ name: string; type: string }> }> {
+  const queryType = schema.getTypeMap();
+  return Object.entries(queryType)
+    .filter(([key, value]) => value instanceof GraphQLObjectType && !key.startsWith('__'))
+    .map(([key, value]) => travel(value as GraphQLObjectType));
+}
+
+function travel(object: GraphQLObjectType){
+  const ret: any = {};
+  ret.name = object.name;
+  const fields = Object.entries(object.getFields()).map(([name, field]) => {
+    return {
+      name,
+      type: field.type.toString(),
+    };
+  });
+
+  ret.fields = fields;
+  return ret;
+}
+
+const serverGraphQLAllTypes = getAllTypesOfSchema(schema);
+
+function testSchema() {
+  const errors: string[] = [];
+
+  GraphQLAllTypes.forEach(type => {
+    const sameServerType = serverGraphQLAllTypes.find((serverType) => serverType.name === type.name);
+    if (!sameServerType) {
+      errors.push(`cannot find type ${type.name}`);
+      return;
+    }
+
+    type.fields.forEach((field) => {
+      const serverField = sameServerType.fields.find((serverField) => serverField.name === field.name);
+      if (!serverField) {
+        errors.push(`cannot find field ${field.name} in type ${type.name}`);
+        return;
+      }
+      if (field.type !== serverField.type) {
+        errors.push(`in type ${type.name}, field ${field.name}: ${field.type} !== ${serverField.name}: ${serverField.type}`);
+        return;
+      }
+    });
+
+    const unknownFields = sameServerType.fields.filter((serverField) => type.fields.every(field => field.name !== serverField.name));
+    if (unknownFields.length) {
+      errors.push(`in type ${type.name}, unknown fields - ${unknownFields.map(field => `${field.name}: ${field.type}`).join(', ')}`);
+      return;
+    }
+  });
+  const unknownTypes = serverGraphQLAllTypes.filter((serverType) => GraphQLAllTypes.every(type => type.name !== serverType.name));
+  if (unknownTypes.length) {
+    errors.push(`unknown types - ${unknownTypes.map(field => `${field.name}`).join(', ')}`);
+  }
+
+  if (errors.length) {
+    throw new Error(`graphql schema test failed : ${errors.join('\n')}`);
+  }
+}
+
+testSchema();

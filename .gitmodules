@@ -1,3 +1,6 @@
 [submodule "DATABASE"]
 	path = devBin
-	url = https://github.com/humor-grad-school/development-databse.git
+	url = https://github.com/humor-grad-school/server-development-tool.git
+[submodule "graphql-schema"]
+	path = graphql-schema
+	url = https://github.com/humor-grad-school/graphql-schema.git
