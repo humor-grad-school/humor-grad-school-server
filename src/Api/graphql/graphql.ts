@@ -5,9 +5,12 @@ import {
   GraphQLString,
   GraphQLInt,
   GraphQLSchema,
+  GraphQLBoolean,
+  GraphQLObjectTypeConfig,
 } from 'graphql'
 import { knex } from '@/dbHelper';
 import { GraphQLAllTypes } from '@/generated/graphql';
+import { IRouterContext } from 'koa-router';
 
 
 
@@ -57,6 +60,21 @@ const Post = new GraphQLObjectType({
     likes: {
       type: GraphQLInt,
     },
+    isLiked: {
+      type: GraphQLBoolean,
+      sqlExpr: (postTable, args, context) => {
+        if (!context.session) {
+          return 'false';
+        }
+        const { userId } = context.session;
+
+        return `EXISTS(
+          SELECT 1
+          FROM postLikes
+          WHERE postLikes.postId = ${postTable}.id AND postLikes.userId = ${userId}
+        )`;
+      }
+    },
     comments: {
       type: new GraphQLList(Comment),
       sqlJoin: (postTable, commentTable) => `${postTable}.id = ${commentTable}.postId`,
@@ -68,7 +86,7 @@ const Post = new GraphQLObjectType({
       type: GraphQLString,
     },
   }),
-});
+} as GraphQLObjectTypeConfig<any, IRouterContext>);
 
 const Comment = new GraphQLObjectType({
   name: 'Comment',
@@ -147,7 +165,18 @@ export const Query = new GraphQLObjectType({
       },
       where: (usersTable, args) => `${usersTable}.id = ${args.id}`,
       resolve: (parent, args, context, resolveInfo) => {
-        return joinMonster(resolveInfo, {}, async sql => {
+        return joinMonster(resolveInfo, context, async sql => {
+          const result = await knex.raw(sql);
+          return result[0];
+        }, {
+          dialect: 'mariadb',
+        });
+      },
+    },
+    boards: {
+      type: new GraphQLList(Board),
+      resolve: (parent, args, context, resolveInfo) => {
+        return joinMonster(resolveInfo, context, async sql => {
           const result = await knex.raw(sql);
           return result[0];
         }, {
@@ -162,7 +191,7 @@ export const Query = new GraphQLObjectType({
       },
       where: (usersTable, args) => `${usersTable}.name = "${args.name}"`,
       resolve: (parent, args, context, resolveInfo) => {
-        return joinMonster(resolveInfo, {}, async sql => {
+        return joinMonster(resolveInfo, context, async sql => {
           const result = await knex.raw(sql);
           return result[0];
         }, {
@@ -238,4 +267,4 @@ function testSchema() {
   }
 }
 
-testSchema();
+// testSchema();
