@@ -10,9 +10,11 @@ export const initPromise = initConfiguration().then(async () => {
   const initApi = (await import('./Api')).init;
   const s3Helper = (await import('./s3Helper')).default;
 
-  await init();
-  await initApi();
-  await s3Helper.init();
+  await Promise.all([
+    init(),
+    initApi(),
+    s3Helper.init(),
+  ]);
 })
 .then(() => { console.log('Init Finished'); })
 .catch((err) => {
