@@ -8,6 +8,15 @@ module.exports = {
       user:     'root',
     },
   },
+  production: {
+    client: 'mysql2',
+    connection: {
+      host: 'hgs-dev.cluster-cnpjdarwhdbx.ap-northeast-2.rds.amazonaws.com',
+      database: 'development',
+      user:     'root',
+      password: process.env.HGS_DEV_RDS_PASSWORD,
+    },
+  },
 
   // staging: {
   //   client: 'postgresql',
