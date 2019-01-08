@@ -95,12 +95,12 @@ export default async function postTest() {
   const contentKey = await uploadWithPreSignedUrl(contentJson, ContentType.CONTENT);
 
   const encodedMedias = await Promise.all(keys.map(async key => {
-    return await fetchBlob(`http://127.0.0.1:9000/${config.AFTER_ENCODING_S3_BUCKET}/${key}`);
+    return await fetchBlob(`http://127.0.0.1:45454/${config.AFTER_ENCODING_S3_BUCKET}/${key}`);
   }));
 
   console.log('encodedMedias', encodedMedias);
 
-  const savedContent = await fetchText(`http://127.0.0.1:9000/${config.CONTENT_S3_BUCKET}/${contentKey}`);
+  const savedContent = await fetchText(`http://127.0.0.1:45454/${config.CONTENT_S3_BUCKET}/${contentKey}`);
   console.log('savedContent', savedContent);
 
   return 'SEX'

@@ -13,10 +13,12 @@ import { isDevelopment } from '..';
 import { passAuthorizationMiddleware } from './AuthorizationPassService';
 import AuthorizationPassService from './AuthorizationPassService';
 import { schema } from './graphql/graphql';
+import viewCountRouter from './ViewCountRouter';
 
 export const app = new Koa();
 
 export function init() {
+  app.proxy = !isDevelopment;
   app.use(logger());
   app.use(bodyParser());
 
@@ -24,28 +26,34 @@ export function init() {
   const mainRouter = new Router();
   const authorizationPassService = new AuthorizationPassService(mainRouter);
 
+  mainRouter.use(authorizationPassService.getAuthorizationMiddleware());
+
   if (isDevelopment) {
     const cors = require('@koa/cors');
     app.use(cors());
+    mainRouter.use('/post/view', viewCountRouter.routes())
   }
-
-  mainRouter.use(authorizationPassService.getAuthorizationMiddleware());
 
   mainRouter.get('/health', passAuthorizationMiddleware, ctx => {
     console.log('health');
     ctx.body = 'hi';
   });
 
-  mainRouter.use('/user', UserApiRouter.routes());
-  mainRouter.use('/post', PostApiRouter.routes());
-  mainRouter.use('/board', BoardApiRouter.routes());
-  mainRouter.use('/auth', AuthenticationApiRouter.routes());
-  mainRouter.use('/comment', CommentApiRouter.routes());
+  if (process.env.IS_VIEW_COUNT_SERVER) {
+    console.log("yes");
+    mainRouter.use('/post/view', viewCountRouter.routes())
+  } else {
+    mainRouter.use('/user', UserApiRouter.routes());
+    mainRouter.use('/post', PostApiRouter.routes());
+    mainRouter.use('/board', BoardApiRouter.routes());
+    mainRouter.use('/auth', AuthenticationApiRouter.routes());
+    mainRouter.use('/comment', CommentApiRouter.routes());
 
-  mainRouter.all('/graphql', passAuthorizationMiddleware, graphqlHTTP({
-    schema,
-    graphiql: isDevelopment,
-  }));
+    mainRouter.all('/graphql', passAuthorizationMiddleware, graphqlHTTP({
+      schema,
+      graphiql: isDevelopment,
+    }));
+  }
 
   // Should update this in the end of router definition.
   authorizationPassService.updatePasssingAuthorizationPathRegExpList();

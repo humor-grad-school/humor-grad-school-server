@@ -9,10 +9,9 @@ export default class AuthorizationPassService {
     return async (ctx: IRouterContext, next) => {
       const isPassablePath = this.passingAuthorizationPathRegExpList.some(regexp => regexp.test(ctx.path));
 
-      const authorizationHeader: string = (
-        ctx.request.headers.authorization
-        || ctx.request.headers.Authorization
-      ).toLowerCase();
+      const authorizationHeader: string = ctx.request.headers.authorization
+        ? ctx.request.headers.authorization.toLowerCase()
+        : undefined;
 
       if (!authorizationHeader) {
         if (isPassablePath) {

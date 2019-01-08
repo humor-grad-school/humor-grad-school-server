@@ -40,6 +40,7 @@
     "@koa/cors": "^2.2.2",
     "aws-sdk": "^2.361.0",
     "class-validator": "^0.9.1",
+    "dataloader": "^1.4.0",
     "file-type": "^10.5.0",
     "form-data": "^2.3.3",
     "google-auth-library": "^2.0.1",

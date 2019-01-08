@@ -10,6 +10,7 @@ export default class PostModel extends Model {
   writerId!: number;
   boardId!: number;
   likes: number;
+  views: number;
 
   createdAt: Date;
   updatedAt: Date;
