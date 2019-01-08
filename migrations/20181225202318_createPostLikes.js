@@ -6,16 +6,20 @@ exports.up = function(knex, Promise) {
   .createTable('postLikes', table => {
     table
     .integer('postId')
-    .unsigned()
+    .unsigned();
+    table
+    .integer('userId')
+    .unsigned();
+    table.timestamp('createdAt').notNullable().defaultTo(knex.fn.now());
+    table.primary('postId', 'userId');
+    table
+    .foreign('postId')
     .references('id')
     .inTable('posts');
     table
-    .integer('userId')
-    .unsigned()
+    .foreign('userId')
     .references('id')
     .inTable('users');
-    table.timestamp('createdAt').notNullable().defaultTo(knex.fn.now());
-    table.primary('postId', 'userId');
     table.index('postId');
     table.index('userId');
   });
