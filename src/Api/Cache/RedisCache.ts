@@ -1,8 +1,8 @@
-import redis, { RedisClient } from 'redis';
 import ICache from "./ICache";
+import { redisClient } from '@/RedisHelper';
 
 export default class RedisCache<T> implements ICache<T> {
-  private client: RedisClient = redis.createClient();
+  private client = redisClient;
 
   constructor() {
     this.client.on('error', (err) => {
