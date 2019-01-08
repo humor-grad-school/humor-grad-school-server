@@ -12,7 +12,7 @@ export const s3 = isDevelopment
   ? new AWS.S3({
     accessKeyId: '123',
     secretAccessKey: '12345678',
-    endpoint: 'http://127.0.0.1:9000',
+    endpoint: 'http://127.0.0.1:45454',
     s3ForcePathStyle: true, // needed with minio?
     signatureVersion: 'v4'
   })
