@@ -9,7 +9,7 @@ exports.up = function(knex, Promise) {
     .references('id')
     .inTable('users');
     table.string('origin');
-    table.timestamp('createdAt').defaultTo(knex.fn.now());
+    table.timestamp('createdAt').notNullable().defaultTo(knex.fn.now());
     table.timestamp('updatedAt').notNullable().defaultTo(knex.raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'))
   })
 };

@@ -14,7 +14,7 @@ exports.up = function(knex, Promise) {
       .unsigned()
       .references('id')
       .inTable('users');
-    table.timestamp('createdAt').defaultTo(knex.fn.now());
+    table.timestamp('createdAt').notNullable().defaultTo(knex.fn.now());
     table.primary('commentId', 'userId');
     table.index('commentId');
     table.index('userId');
