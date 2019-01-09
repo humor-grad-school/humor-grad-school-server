@@ -32,6 +32,8 @@
     "@types/node": "^10.12.10",
     "@types/node-fetch": "^2.1.4",
     "@types/redis": "^2.8.8",
+    "archiver": "^3.0.0",
+    "ignore": "^5.0.4",
     "nodemon": "^1.18.7",
     "serverless": "^1.35.1",
     "typescript": "^3.1.6"
