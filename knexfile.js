@@ -11,7 +11,7 @@ module.exports = {
   production: {
     client: 'mysql2',
     connection: {
-      host: 'hgs-dev.cluster-cnpjdarwhdbx.ap-northeast-2.rds.amazonaws.com',
+      host: 'hgs-rds.cluster-cnfbfixk644e.ap-northeast-2.rds.amazonaws.com',
       database: 'development',
       user:     'root',
       password: process.env.HGS_DEV_RDS_PASSWORD,
