@@ -13,7 +13,7 @@ import { isDevelopment } from '..';
 import { passAuthorizationMiddleware } from './AuthorizationPassService';
 import AuthorizationPassService from './AuthorizationPassService';
 import { schema } from './graphql/graphql';
-import viewCountRouter from './ViewCountRouter';
+import ViewCountRouter from './ViewCountRouter';
 
 export const app = new Koa();
 
@@ -31,7 +31,7 @@ export function init() {
   if (isDevelopment) {
     const cors = require('@koa/cors');
     app.use(cors());
-    mainRouter.use('/post/view', viewCountRouter.routes())
+    mainRouter.use('/post/:postId', (new ViewCountRouter()).routes())
   }
 
   mainRouter.get('/health', passAuthorizationMiddleware, ctx => {
@@ -41,7 +41,7 @@ export function init() {
 
   if (process.env.IS_VIEW_COUNT_SERVER) {
     console.log("yes");
-    mainRouter.use('/post/view', viewCountRouter.routes())
+    mainRouter.use('/post/:postId', (new ViewCountRouter()).routes())
   } else {
     mainRouter.use('/user', UserApiRouter.routes());
     mainRouter.use('/post', PostApiRouter.routes());

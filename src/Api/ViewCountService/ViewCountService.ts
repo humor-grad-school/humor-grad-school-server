@@ -1,7 +1,7 @@
 import PostModel from '@/Model/PostModel';
 import DataLoader from 'dataloader';
 import wait from '@/utils/wait';
-import { redisClient } from '@/RedisHelper';
+import { redisClient, redisExistsAsync, redisSetnxAsync } from '@/RedisHelper';
 
 // TODO : What I have to do with abnormal request? like a abusing?
 export default class ViewCountService {
@@ -14,19 +14,9 @@ export default class ViewCountService {
     return postIds.map(postId => posts.find(post => post.id === postId));
   });
 
-  constructor() {
-    this.runFlushInterval();
-  }
-
-  private setRedisIfNotExists(key: string, value: string): Promise<boolean> {
-    return new Promise<boolean>((resolve, reject) => {
-      this.redisClient.setnx(key, value, (err, reply) => {
-        if (err) {
-          return reject(err);
-        }
-        return resolve(reply ? true : false);
-      })
-    });
+  private generateViewCountRedisKey(postId: number, ip: string, userId: number | undefined) {
+    const key = `view-count-postId-${postId}-${userId ? `userId-${userId}` : `ip-${ip}`}`;
+    return key;
   }
 
   async saveViewCount(postId: number, ip: string, userId: number | undefined) {
@@ -44,10 +34,10 @@ export default class ViewCountService {
         this.viewCountMap[postId] = 0;
       }
 
-      const key = `${postId}-${ip}${userId ? `-${userId}` : ''}`;
+      const key = this.generateViewCountRedisKey(postId, ip, userId);
 
       // SET redis if not exists to
-      const isNewView = await this.setRedisIfNotExists(key, '1')
+      const isNewView = await redisSetnxAsync(key, '1');
       if (!isNewView) {
         console.log('already viewed');
         return;
@@ -61,7 +51,7 @@ export default class ViewCountService {
     }
   }
 
-  async waitUntilStopAllSaveProcess() {
+  private async waitUntilStopAllSaveProcess() {
     return new Promise(resolve => {
       const interval = setInterval(() => {
         if (this.savingProcessCount === 0) {
@@ -72,7 +62,7 @@ export default class ViewCountService {
     });
   }
 
-  async flushViewCountToDB() {
+  private async flushViewCountToDB() {
     this.viewCountLockPromise = new Promise(async (resolve) => {
       try {
         await this.waitUntilStopAllSaveProcess();
@@ -109,5 +99,12 @@ export default class ViewCountService {
       console.error(err);
     }
     this.runFlushInterval();
+  }
+
+  async isViewed(postId: number, ip: string, userId: number | undefined) {
+    const key = this.generateViewCountRedisKey(postId, ip, userId);
+
+    const isViewed = redisExistsAsync(key);
+    return isViewed;
   }
 }

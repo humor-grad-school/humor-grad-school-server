@@ -13,7 +13,10 @@ import {
 import { knex } from '@/dbHelper';
 import { GraphQLAllTypes } from '@/generated/graphql';
 import { IRouterContext } from 'koa-router';
+import ViewCountService from '../ViewCountService/ViewCountService';
 
+
+const viewCountService = new ViewCountService();
 
 const DateType = new GraphQLScalarType({
   name: 'Date',
@@ -65,6 +68,18 @@ const Post = new GraphQLObjectType({
     },
     likes: {
       type: new GraphQLNonNull(GraphQLInt),
+    },
+    isViewed: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve({ id }, args, context) {
+        // IP,
+        // UserID
+        const { ip, session } = context;
+        const userId = session && session.userId;
+        console.log(id, ip, session);
+
+        return viewCountService.isViewed(id, ip, userId);
+      },
     },
     isLiked: {
       type: new GraphQLNonNull(GraphQLBoolean),
