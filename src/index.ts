@@ -5,18 +5,26 @@ export const isDevelopment: boolean = process.env.NODE_ENV === 'development';
 import { initConfiguration } from './configuration';
 import 'module-alias/register';
 
-export const initPromise = initConfiguration().then(async () => {
-  const { init } = await import('./dbHelper');
-  const initApi = (await import('./Api')).init;
-  const s3Helper = (await import('./s3Helper')).default;
+async function logForInit(name, func: Function) {
+  console.log(`${name} Init Start`);
+  await func();
+  console.log(`${name} Init Finished`);
+}
 
+export const initPromise = initConfiguration().then(async () => {
   await Promise.all([
-    init(),
-    initApi(),
-    s3Helper.init(),
+    logForInit('deHelper', async () => {
+      await (await import('./dbHelper')).init();
+    }),
+    logForInit('api router', async () => {
+      await (await import('./Api')).init();
+    }),
+    logForInit('s3Helper', async () => {
+      await (await import('./s3Helper')).default.init();
+    }),
   ]);
 })
-.then(() => { console.log('Init Finished'); })
+.then(() => { console.log('All Init Finished'); })
 .catch((err) => {
   console.error(err);
   throw new Error(err);

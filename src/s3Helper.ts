@@ -1,6 +1,5 @@
 import config from '@/config.json';
 import AWS from 'aws-sdk';
-import { execFile } from 'child_process';
 
 const uuid = require('uuid/v4');
 
