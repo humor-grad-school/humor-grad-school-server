@@ -8,7 +8,8 @@ const ignore = require('ignore');
 // create a file to stream archive data to.
 const now = new Date();
 const buildId = `${now.toISOString().replace(/\:/g, '_')}`;
-const output = fsSync.createWriteStream(path.join(__dirname, `ebDist/eb-build-${buildId}.zip`));
+console.log(buildId);
+const output = fsSync.createWriteStream(path.join(__dirname, `ebDist/${buildId}.zip`));
 const archive = archiver('zip', {
   zlib: { level: 9 } // Sets the compression level.
 });
@@ -59,7 +60,6 @@ const blackList = [
   '.gitmodules',
   '.gitignore',
   'ebDist',
-  'generated',
 ];
 
 const whiteList = [
@@ -102,7 +102,7 @@ async function getTargetFiles(currentPath, isDirectory = true) {
 getTargetFiles(__dirname)
   .then((targetFiles) => {
     targetFiles.forEach((targetFile) => {
-      archive.append(targetFile, { name: targetFile });
+      archive.file(targetFile, { name: targetFile });
     });
     archive.finalize();
   });

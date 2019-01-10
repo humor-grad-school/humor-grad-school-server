@@ -6,7 +6,7 @@
   "scripts": {
     "test": "node dist/runTest.js",
     "build": "tsc",
-    "postinstall": "npm run gen",
+    "prebuild": "npm run gen",
     "watch-build": "tsc -w",
     "watch-start": "nodemon --watch dist dist/local.js",
     "start": "node dist/local.js",
