@@ -3,10 +3,5 @@
   "Logging": "/tmp/log",
   "Image": {
   	"Update": "false"
-  },
-  "Ports": [
-    {
-      "ContainerPort": "8080"
-    }
-  ]
+  }
 }
