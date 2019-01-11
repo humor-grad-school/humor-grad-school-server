@@ -2,8 +2,9 @@ import redis, { RedisClient } from 'redis';
 import { isDevelopment } from '.';
 
 export const redisClient: RedisClient = redis.createClient({
-  host: isDevelopment ? '127.0.0.1' : 'hgs-dev-redis.kj72ta.ng.0001.apn2.cache.amazonaws.com',
+  host: isDevelopment ? '127.0.0.1' : 'hgs-reids-cluster.uzuxys.clustercfg.apn2.cache.amazonaws.com',
 });
+
 
 function promisifyOneArgs<T1, R>(func: (args: T1, callback: redis.Callback<R>) => void) {
   return (args: T1) => {
