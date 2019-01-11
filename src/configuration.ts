@@ -11,7 +11,7 @@ let configuration: Configuration = undefined;
 
 export async function initConfiguration() {
   const params = {
-    Bucket: 'humor-grad-school-configuration',
+    Bucket: 'hgs-configuration',
     Key: 'config.json',
     ResponseContentType: 'applicaiton/json',
   };
