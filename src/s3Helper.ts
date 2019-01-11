@@ -7,7 +7,7 @@ const MB = 1024 * 1024;
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
-export const s3 = isDevelopment
+export const 09 = isDevelopment
   ? new AWS.S3({
     accessKeyId: '123',
     secretAccessKey: '12345678',

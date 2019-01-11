@@ -1,4 +1,3 @@
-bin
 devBin
 
 dist
@@ -89,10 +88,16 @@ typings/
 # FuseBox cache
 .fusebox/
 
-# End of https://www.gitignore.io/api/node# Elastic Beanstalk Files
-.elasticbeanstalk/*
-.git
-.gitignore# Elastic Beanstalk Files
-.elasticbeanstalk/*
-.git
+# End of https://www.gitignore.io/api/node# Elastic Beanstalk Files
+
+.elasticbeanstalk/*
+
+.git
+
+.gitignore# Elastic Beanstalk Files
+
+.elasticbeanstalk/*
+
+.git
+
 .gitignore
