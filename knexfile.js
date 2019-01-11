@@ -14,7 +14,7 @@ module.exports = {
       host: 'hgs-rds.cluster-cnfbfixk644e.ap-northeast-2.rds.amazonaws.com',
       database: 'development',
       user:     'root',
-      password: process.env.HGS_DEV_RDS_PASSWORD,
+      password: process.env.HGS_RDS_PASSWORD,
     },
   },
 
