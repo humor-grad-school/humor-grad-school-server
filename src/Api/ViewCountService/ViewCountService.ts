@@ -1,12 +1,11 @@
 import PostModel from '@/Model/PostModel';
 import DataLoader from 'dataloader';
 import wait from '@/utils/wait';
-import { redisClient, redisExistsAsync, redisSetnxAsync } from '@/RedisHelper';
+import { redisExistsAsync, redisSetnxAsync } from '@/RedisHelper';
 
 // TODO : What I have to do with abnormal request? like a abusing?
 export default class ViewCountService {
   private viewCountMap: { [postId: number]: number } = {};
-  private redisClient = redisClient;
   private viewCountLockPromise: Promise<void> = Promise.resolve();
   private savingProcessCount = 0;
   private postLoader = new DataLoader(async (postIds: number[]) => {
