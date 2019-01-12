@@ -7,7 +7,7 @@ const MB = 1024 * 1024;
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
-export const 09 = isDevelopment
+export const s3 = isDevelopment
   ? new AWS.S3({
     accessKeyId: '123',
     secretAccessKey: '12345678',
@@ -15,7 +15,9 @@ export const 09 = isDevelopment
     s3ForcePathStyle: true, // needed with minio?
     signatureVersion: 'v4'
   })
-  : new AWS.S3();
+  : new AWS.S3({
+    region: 'ap-northeast-2',
+  });
 
 class S3Helper {
   async init() {
