@@ -14,6 +14,8 @@ import { knex } from '@/dbHelper';
 import { GraphQLAllTypes } from '@/generated/graphql';
 import { IRouterContext } from 'koa-router';
 import ViewCountService from '../ViewCountService/ViewCountService';
+import CommentModel from '@/Model/CommentModel';
+import PostModel from '@/Model/PostModel';
 
 
 const viewCountService = new ViewCountService();
@@ -105,6 +107,16 @@ const Post = new GraphQLObjectType({
     comments: {
       type: new GraphQLNonNull(new GraphQLList(Comment)),
       sqlJoin: (postTable, commentTable) => `${postTable}.id = ${commentTable}.postId`,
+    },
+    commentCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+      sqlExpr: (postTable, args, context) => {
+        return `(
+          SELECT COUNT(*)
+          FROM ${CommentModel.tableName}
+          WHERE ${CommentModel.tableName}.postId = ${postTable}.id
+        )`;
+      }
     },
     createdAt: {
       type: new GraphQLNonNull(DateType),

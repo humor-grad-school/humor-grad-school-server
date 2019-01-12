@@ -52,4 +52,10 @@ export async function runTest() {
   const post = await writeTest();
   await likePost(post.id);
   await writeAndLikeCommentTest(post.id);
+  await writeAndLikeCommentTest(post.id);
+  await writeAndLikeCommentTest(post.id);
+  await writeAndLikeCommentTest(post.id);
+  await writeAndLikeCommentTest(post.id);
+  await writeAndLikeCommentTest(post.id);
+  await writeAndLikeCommentTest(post.id);
 }
