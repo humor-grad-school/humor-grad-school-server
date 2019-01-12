@@ -4,6 +4,9 @@ import { getAuthenticationService } from './AuthenticationService';
 import { transaction } from 'objection';
 import { AuthenticationRequestData } from './AuthenticationService/BaseAuthenticationService';
 import { passAuthorizationMiddleware } from './AuthorizationPassService';
+import s3Helper from '@/s3Helper';
+import { getConfiguration } from '@/configuration';
+import encode from './encode/encode';
 
 const router = new Router();
 
@@ -47,6 +50,7 @@ router.post('/', passAuthorizationMiddleware, async ctx => {
     await transaction(UserModel.knex(), async (trx) => {
       const user = await UserModel.query(trx).insert({
         username,
+        avatarUrl: UserModel.defaultAvatarUrl,
       });
       await identity.$relatedQuery<UserModel>('user', trx).relate(user);
     });
@@ -55,6 +59,28 @@ router.post('/', passAuthorizationMiddleware, async ctx => {
     ctx.status = 500;
     return;
   }
+
+  ctx.status = 200;
+});
+
+// client -> get presignedPost to Server
+// client -> post with presigned url to S3
+// client -> request change avatar to encoded avatar to Server
+
+router.get('/avatar/presignedPost', async ctx => {
+  ctx.body = await s3Helper.createPresignedPost(UserModel.avatarSizeLimit, getConfiguration().BEFORE_ENCODING_S3_BUCKET);
+});
+
+router.put('/avatar', async ctx => {
+  const { key } = ctx.request.body;
+
+  const { userId } = ctx.session;
+
+  const newAvatarS3Key = await encode(key, getConfiguration().THUMBNAIL_S3_BUCKET, `${userId}-${key}`);
+
+  await UserModel.query().update({
+    avatarUrl: `${getConfiguration().avatarBaseUrl}/${newAvatarS3Key}`,
+  }).where('id', userId);
 
   ctx.status = 200;
 });

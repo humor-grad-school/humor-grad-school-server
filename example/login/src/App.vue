@@ -17,6 +17,7 @@
     </div>
     <div v-if="isLoginSuccessful">
       <button @click="runTest">Run Test</button>
+      <Avatar/>
     </div>
   </div>
 </template>

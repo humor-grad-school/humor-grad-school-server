@@ -14,6 +14,7 @@ export class Configuration {
   CONTENT_S3_BUCKET = "content-s3-bucket";
   S3_DEVELOPMENT_PORT = 9000;
   THUMBNAIL_S3_BUCKET = "hgs-thumbnail";
+  avatarBaseUrl = "https://avatar.humorgrad.com";
 }
 
 let configuration: Configuration = undefined;
@@ -27,7 +28,10 @@ export async function initConfiguration() {
   };
   const { Body: body } = await s3.getObject(params).promise();
 
-  configuration = JSON.parse(body as string) as Configuration;
+  configuration = {
+    ...new Configuration(),
+    ...JSON.parse(body as string) as Configuration,
+  };
 
   Object.entries(configuration).forEach(([key, value]) => {
     process.env[key] = value;

@@ -11,6 +11,7 @@ export default class PostModel extends Model {
   boardId!: number;
   likes: number;
   views: number;
+  thumbnailUrl: string;
 
   createdAt: Date;
   updatedAt: Date;
@@ -20,6 +21,8 @@ export default class PostModel extends Model {
   comments: CommentModel[];
 
   static tableName = 'posts';
+
+  static defaultThumbnailUrl = 'https://thumbnail.humorgrad.com/default.png';
 
   static relationMappings = () => ({
     writer: {

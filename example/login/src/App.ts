@@ -5,6 +5,7 @@ import FacebookLoginComponent from './Facebook/FacebookLoginComponent.vue';
 import login from './Api/login';
 import { ErrorCode } from '../../../src/Api/ErrorCode';
 import { runTest } from './test/test';
+import Avatar from './Avatar/Avatar.vue';
 
 export function is2xx(response: Response) {
   return response.status >= 200 && response.status < 300;
@@ -14,6 +15,7 @@ export function is2xx(response: Response) {
   components: {
     KakaoLoginComponent,
     FacebookLoginComponent,
+    Avatar,
   },
 })
 export default class App extends Vue {

@@ -41,6 +41,9 @@ const User = new GraphQLObjectType({
       type: new GraphQLNonNull(new GraphQLList(Post)),
       sqlJoin: (userTable, postTable) => `${userTable}.id = ${postTable}.writerId`,
     },
+    avatarUrl: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
   }),
 });
 
@@ -95,6 +98,9 @@ const Post = new GraphQLObjectType({
           WHERE postLikes.postId = ${postTable}.id AND postLikes.userId = ${userId}
         )`;
       }
+    },
+    thumbnailUrl: {
+      type: new GraphQLNonNull(GraphQLString),
     },
     comments: {
       type: new GraphQLNonNull(new GraphQLList(Comment)),
@@ -196,6 +202,18 @@ export const Query = new GraphQLObjectType({
         }, {
           dialect: 'mariadb',
         });
+      },
+    },
+    me: {
+      type: User,
+      resolve: (parent, args, context, ...rest) => {
+        if (!context.session) {
+          throw new Error('login first please');
+        }
+
+        return Query.getFields().user.resolve(parent, {
+          id: context.session.userId,
+        },context, ...rest,);
       },
     },
     boards: {

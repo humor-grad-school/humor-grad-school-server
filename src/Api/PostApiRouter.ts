@@ -6,6 +6,7 @@ import encode from './encode/encode';
 import BoardModel from '@/Model/BoardModel';
 import { passAuthorizationMiddleware } from './AuthorizationPassService';
 import { transaction } from 'objection';
+import { getConfiguration } from '@/configuration';
 
 const router = new Router();
 
@@ -25,6 +26,7 @@ router.post('/', validateBody(PostPostBody), async ctx => {
     contentS3Key: body.contentS3Key,
     writerId,
     boardId: board.id,
+    thumbnailUrl: PostModel.defaultThumbnailUrl,
   });
   ctx.body = post;
 });
@@ -40,7 +42,8 @@ router.get('/:id', passAuthorizationMiddleware, async ctx => {
 
 router.post('/encode/:key', async ctx => {
   const { key } = ctx.params;
-  await encode(key);
+  await encode(key, getConfiguration().AFTER_ENCODING_S3_BUCKET, key);
+  // TODO : return url of media
   ctx.status = 200;
 });
 

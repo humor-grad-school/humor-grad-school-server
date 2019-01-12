@@ -26,6 +26,7 @@ class S3Helper {
         getConfiguration().BEFORE_ENCODING_S3_BUCKET,
         getConfiguration().AFTER_ENCODING_S3_BUCKET,
         getConfiguration().CONTENT_S3_BUCKET,
+        getConfiguration().THUMBNAIL_S3_BUCKET,
       ];
       await Promise.all(buckets.map(async bucket => {
         const isExists = await this.checkBucketExists(bucket);
