@@ -10,7 +10,7 @@ const writeFileAsync = util.promisify(fs.writeFile);
 const readFileAsync = util.promisify(fs.readFile);
 const execAsync = util.promisify(exec);
 
-const tmpDir = path.join(__dirname, '../../../tmp');
+const tmpDir = isWindows ? path.join(__dirname, '../../../tmp') : '/tmp';
 const binDir = path.join(__dirname, '../../../bin');
 const MAX_WIDTH = 300;
 
