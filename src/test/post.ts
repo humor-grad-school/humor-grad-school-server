@@ -1,7 +1,7 @@
 import fetch, { Response } from 'node-fetch';
 import fs, { ReadStream } from 'fs';
-import config from '@/config.json';
 import check2xx from './check2xx';
+import { getConfiguration } from '@/configuration';
 
 const FormData = require('form-data');
 
@@ -95,12 +95,12 @@ export default async function postTest() {
   const contentKey = await uploadWithPreSignedUrl(contentJson, ContentType.CONTENT);
 
   const encodedMedias = await Promise.all(keys.map(async key => {
-    return await fetchBlob(`http://127.0.0.1:9000/${config.AFTER_ENCODING_S3_BUCKET}/${key}`);
+    return await fetchBlob(`http://127.0.0.1:9000/${getConfiguration().AFTER_ENCODING_S3_BUCKET}/${key}`);
   }));
 
   console.log('encodedMedias', encodedMedias);
 
-  const savedContent = await fetchText(`http://127.0.0.1:9000/${config.CONTENT_S3_BUCKET}/${contentKey}`);
+  const savedContent = await fetchText(`http://127.0.0.1:9000/${getConfiguration().CONTENT_S3_BUCKET}/${contentKey}`);
   console.log('savedContent', savedContent);
 
   return 'SEX'

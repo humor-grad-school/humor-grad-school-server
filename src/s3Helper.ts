@@ -1,5 +1,5 @@
-import config from '@/config.json';
 import AWS from 'aws-sdk';
+import { getConfiguration } from './configuration';
 
 const uuid = require('uuid/v4');
 
@@ -23,9 +23,9 @@ class S3Helper {
   async init() {
     if (isDevelopment) {
       const buckets = [
-        config.BEFORE_ENCODING_S3_BUCKET,
-        config.AFTER_ENCODING_S3_BUCKET,
-        config.CONTENT_S3_BUCKET,
+        getConfiguration().BEFORE_ENCODING_S3_BUCKET,
+        getConfiguration().AFTER_ENCODING_S3_BUCKET,
+        getConfiguration().CONTENT_S3_BUCKET,
       ];
       await Promise.all(buckets.map(async bucket => {
         const isExists = await this.checkBucketExists(bucket);

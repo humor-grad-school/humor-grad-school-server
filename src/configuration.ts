@@ -1,12 +1,19 @@
 import AWS from 'aws-sdk';
+const credentials = new AWS.SharedIniFileCredentials({ profile: 'hgs' });
+AWS.config.credentials = credentials;
 
 const s3 = new AWS.S3({
   region: 'ap-northeast-2',
 });
 
-export type Configuration = {
+export class Configuration {
   FACEBOOK_SECRET_KEY: string;
   HGS_RDS_PASSWORD: string;
+  BEFORE_ENCODING_S3_BUCKET = "before-encoding-s3-bucket";
+  AFTER_ENCODING_S3_BUCKET = "after-encoding-s3-bucket";
+  CONTENT_S3_BUCKET = "content-s3-bucket";
+  S3_DEVELOPMENT_PORT = 9000;
+  THUMBNAIL_S3_BUCKET = "hgs-thumbnail";
 }
 
 let configuration: Configuration = undefined;

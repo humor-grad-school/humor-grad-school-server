@@ -2,11 +2,11 @@ import fileType from 'file-type';
 import encodeImage from './encodeImage';
 import encodeVideo from './encodeVideo';
 import { s3 } from '@/s3Helper';
-import config from '@/config.json';
+import { getConfiguration } from '@/configuration';
 
 export default async function encode(key: string) {
   const { Body: body } = await s3.getObject({
-    Bucket: config.BEFORE_ENCODING_S3_BUCKET,
+    Bucket: getConfiguration().BEFORE_ENCODING_S3_BUCKET,
     Key: key,
   }).promise();
 
@@ -22,7 +22,7 @@ export default async function encode(key: string) {
   const encodedMediaMime = fileType(encodedMedia).mime;
 
   await s3.putObject({
-    Bucket: config.AFTER_ENCODING_S3_BUCKET,
+    Bucket: getConfiguration().AFTER_ENCODING_S3_BUCKET,
     Key: key,
     Body: encodedMedia,
     ContentType: encodedMediaMime,
