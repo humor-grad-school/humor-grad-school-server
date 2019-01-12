@@ -23,23 +23,10 @@ provider:
 
 # you can overwrite defaults here
 #  stage: dev
-region: ap-northeast-2
+  region: ap-northeast-2
 
 # you can add statements to the Lambda function's IAM Role here
-iamRoleStatements:
-  - Effect: "Allow"
-    Action:
-      - "s3:ListBucket"
-    Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
-  - Effect: "Allow"
-    Action:
-      - "s3:PutObject"
-    Resource:
-      Fn::Join:
-        - ""
-        - - "arn:aws:s3:::"
-          - "Ref" : "ServerlessDeploymentBucket"
-          - "/*"
+  role: arn:aws:iam::910069961987:role/hgs-lambda-role
 
 # you can define service wide environment variables here
 #  environment:
@@ -47,15 +34,15 @@ iamRoleStatements:
 
 # you can add packaging information here
 package:
- include:
-   - bin/**
-   - graphql-schema/**
-   - migrations/**
-   - node_modules
-   - dist/**
-   - codegen.yml
-   - knexfile.js
-   - package.json
+  include:
+    - bin/**
+    - graphql-schema/**
+    - migrations/**
+    - node_modules/**
+    - dist/**
+    - codegen.yml
+    - knexfile.js
+    - package.json
 
 functions:
   http:
@@ -67,6 +54,14 @@ functions:
       - http:
           path: /{any+} # this matches any path, the token 'any' doesn't mean anything special
           method: ANY
+    vpc:
+      subnetIds:
+        - subnet-bf2764f3
+        - subnet-cda6baa5
+      securityGroupIds:
+        - sg-0eac3934f9a92e4fe
+    environment:
+      NODE_END: production
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
