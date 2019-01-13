@@ -20,6 +20,8 @@ router.post('/', validateBody(PostPostBody), async ctx => {
   const body = ctx.request.body as PostPostBody;
   const writerId = ctx.session.userId;
 
+  // TODO: Get first image from post content, and make thumbnail.
+
   const board = await BoardModel.query().findOne({ name: body.boardName });
   const post = await PostModel.query().insert({
     title: body.title,
