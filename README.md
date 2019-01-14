@@ -14,3 +14,9 @@ docker run --name hgs-s3-minio -d -p 9000:9000 -e MINIO_ACCESS_KEY='123' -e MINI
 // make database
 docker exec -it hgs-mysql mysql -u root -e "CREATE DATABASE development"
 ```
+
+# Docker restart
+
+docker restart hgs-mysql
+docker restart hgs-redis
+docker restart hgs-s3-minio
