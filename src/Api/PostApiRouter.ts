@@ -4,9 +4,9 @@ import validateBody from './validateBody';
 
 import encode from './encode/encode';
 import BoardModel from '@/Model/BoardModel';
-import { passAuthorizationMiddleware } from './AuthorizationPassService';
 import { transaction } from 'objection';
 import { getConfiguration } from '@/configuration';
+import { passAuthorizationMiddleware } from './types/generated/server/ServerBaseApiRouter';
 
 const router = new Router();
 

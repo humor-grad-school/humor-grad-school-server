@@ -10,10 +10,10 @@ import BoardApiRouter from './BoardApiRouter';
 import CommentApiRouter from './CommentApiRouter';
 import AuthenticationApiRouter from './AuthenticationApiRouter';
 import { isDevelopment } from '..';
-import { passAuthorizationMiddleware } from './AuthorizationPassService';
 import AuthorizationPassService from './AuthorizationPassService';
 import { schema } from './graphql/graphql';
 import ViewCountRouter from './ViewCountRouter';
+import { passAuthorizationMiddleware } from './types/generated/server/ServerBaseApiRouter';
 
 export const app = new Koa();
 
@@ -46,7 +46,7 @@ export function init() {
     mainRouter.use('/user', UserApiRouter.routes());
     mainRouter.use('/post', PostApiRouter.routes());
     mainRouter.use('/board', BoardApiRouter.routes());
-    mainRouter.use('/auth', AuthenticationApiRouter.routes());
+    mainRouter.use((new AuthenticationApiRouter()).getKoaRouter().routes());
     mainRouter.use('/comment', CommentApiRouter.routes());
 
     mainRouter.all('/graphql', passAuthorizationMiddleware, graphqlHTTP({

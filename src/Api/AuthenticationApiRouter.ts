@@ -1,72 +1,69 @@
-import Router from 'koa-router';
-import UserModel from '@/Model/UserModel';
+import { BaseAuthenticationApiRouter, HgsRouterContext, Session } from "./types/generated/server/ServerBaseApiRouter";
+import { ParamMap } from "./types/generated/ParamMap";
+import { ResponseType } from "./types/generated/ResponseType";
+import { RequestBodyType } from "./types/generated/RequestBodyType";
+import { getAuthenticationService } from "./AuthenticationService";
+import { ErrorCode } from "./ErrorCode";
+import UserModel from "@/Model/UserModel";
 import uuid from 'uuid/v4';
-import sessionCacheService, { ISession } from './Cache/sessionCacheService';
-import { ErrorCode } from './ErrorCode';
-import { getAuthenticationService } from './AuthenticationService';
-import { AuthenticationRequestData } from './AuthenticationService/BaseAuthenticationService';
-import { passAuthorizationMiddleware } from './AuthorizationPassService';
-
-const router = new Router();
+import sessionCacheService from "./Cache/sessionCacheService";
 
 async function issueSessionToken(user: UserModel): Promise<string> {
   const sessionToken = uuid();
-  const session: ISession = {
+  const session: Session = {
     userId: user.id,
   };
   await sessionCacheService.set(sessionToken, session);
   return sessionToken;
 }
 
-router.post('/:origin', passAuthorizationMiddleware, async (ctx, next) => {
-  const { origin }: { origin : string } = ctx.params;
-  const {
-    authenticationRequestData,
-  }:{
-    authenticationRequestData: AuthenticationRequestData,
-  } = ctx.request.body;
+export default class AuthenticationApiRouter extends BaseAuthenticationApiRouter {
+  protected async authenticate(paramMap: ParamMap.AuthenticateParamMap, body: RequestBodyType.AuthenticateRequestBodyType, context: HgsRouterContext): Promise<ResponseType.AuthenticateResponseType> {
+    const { origin } = paramMap;
+    const {
+      authenticationRequestData,
+    } = body;
 
-  const authenticationService = getAuthenticationService(origin);
+    const authenticationService = getAuthenticationService(origin);
 
-  if (!authenticationService) {
-    console.warn('wrong identityType - ', origin);
-    ctx.status = 400;
-    ctx.body = {
-      errorCode: ErrorCode.AuthenticateErrorCode.WrongIdentityType,
+    if (!authenticationService) {
+      console.warn('wrong identityType - ', origin);
+      return {
+        isSuccessful: false,
+        errorCode: ErrorCode.AuthenticateErrorCode.WrongIdentityType,
+      };
+    }
+
+    const authResult = await authenticationService.authenticateRequest(authenticationRequestData);
+
+    if (!authResult) {
+      console.warn('authentication failed'); // TODO : Add more Information
+      return {
+        isSuccessful: false,
+        errorCode: ErrorCode.AuthenticateErrorCode.AuthenticationFailed,
+      };
+    }
+
+    const identity = await authenticationService.getIdentity(authResult.identityId)
+      || await authenticationService.createIdentity(authResult);
+
+    const user = await identity.getUser();
+    if (!user) {
+      // TODO : Need sign in
+      console.warn('No user with Identity. Need sign in');
+      return {
+        isSuccessful: false,
+        errorCode: ErrorCode.AuthenticateErrorCode.NoUser,
+      };
+    }
+
+    const sessionToken = await issueSessionToken(user);
+
+    return {
+      isSuccessful: true,
+      data: {
+        sessionToken
+      },
     };
-    return;
   }
-
-  const authResult = await authenticationService.authenticateRequest(authenticationRequestData);
-
-  if (!authResult) {
-    console.warn('authentication failed'); // TODO : Add more Information
-    ctx.status = 401;
-    ctx.body = {
-      errorCode: ErrorCode.AuthenticateErrorCode.AuthenticationFailed,
-    };
-    return;
-  }
-
-  const identity = await authenticationService.getIdentity(authResult.identityId)
-    || await authenticationService.createIdentity(authResult);
-
-  const user = await identity.getUser();
-  if (!user) {
-    // TODO : Need sign in
-    console.warn('No user with Identity. Need sign in');
-    ctx.status = 401;
-    ctx.body = {
-      errorCode: ErrorCode.AuthenticateErrorCode.NoUser,
-    };
-    return;
-  }
-
-  const sessionToken = await issueSessionToken(user);
-
-  ctx.body = {
-    sessionToken,
-  };
-});
-
-export default router;
+}

@@ -3,10 +3,10 @@ import UserModel from '@/Model/UserModel';
 import { getAuthenticationService } from './AuthenticationService';
 import { transaction } from 'objection';
 import { AuthenticationRequestData } from './AuthenticationService/BaseAuthenticationService';
-import { passAuthorizationMiddleware } from './AuthorizationPassService';
 import s3Helper from '@/s3Helper';
 import { getConfiguration } from '@/configuration';
 import encode from './encode/encode';
+import { passAuthorizationMiddleware } from './types/generated/server/ServerBaseApiRouter';
 
 const router = new Router();
 

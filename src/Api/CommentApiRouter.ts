@@ -2,7 +2,7 @@ import Router from 'koa-router';
 import validateBody from './validateBody';
 
 import CommentModel from '@/Model/CommentModel';
-import { passAuthorizationMiddleware } from './AuthorizationPassService';
+import { passAuthorizationMiddleware } from './types/generated/server/ServerBaseApiRouter';
 import { transaction } from 'objection';
 
 const router = new Router();

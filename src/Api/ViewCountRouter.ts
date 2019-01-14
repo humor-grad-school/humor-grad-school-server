@@ -1,6 +1,6 @@
 import ViewCountService from "./ViewCountService/ViewCountService";
 import Router from 'koa-router';
-import { passAuthorizationMiddleware } from "./AuthorizationPassService";
+import { passAuthorizationMiddleware } from "./types/generated/server/ServerBaseApiRouter";
 
 export default class ViewCountRouter extends Router {
   private viewCountService = new ViewCountService();

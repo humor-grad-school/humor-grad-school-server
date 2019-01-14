@@ -1,7 +1,7 @@
-import { ISession } from "./Cache/sessionCacheService";
+import { Session } from "./types/generated/server/ServerBaseApiRouter";
 
 declare module 'koa-router' {
     interface IRouterContext {
-      session: ISession;
+      session: Session;
    }
 }

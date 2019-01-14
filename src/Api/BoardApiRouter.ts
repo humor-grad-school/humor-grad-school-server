@@ -1,6 +1,6 @@
 import Router from 'koa-router';
 import BoardModel from '@/Model/BoardModel';
-import { passAuthorizationMiddleware } from './AuthorizationPassService';
+import { passAuthorizationMiddleware } from './types/generated/server/ServerBaseApiRouter';
 import PostModel from '@/Model/PostModel';
 
 const router = new Router();

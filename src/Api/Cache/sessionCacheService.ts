@@ -1,16 +1,13 @@
 import MemoryCache from "./MemoryCache";
 import RedisCache from "./RedisCache";
 import ICache from "./ICache";
+import { Session } from "../types/generated/server/ServerBaseApiRouter";
 
-export interface ISession {
-  userId: number;
-}
+class SessionCacheService implements ICache<Session> {
+  private memoryCache = new MemoryCache<Session>();
+  private redisCache = new RedisCache<Session>();
 
-class SessionCacheService implements ICache<ISession> {
-  private memoryCache = new MemoryCache<ISession>();
-  private redisCache = new RedisCache<ISession>();
-
-  async get(key: string): Promise<ISession> {
+  async get(key: string): Promise<Session> {
     const valueInMemory = await this.memoryCache.get(key);
     if (valueInMemory) {
       return valueInMemory;
@@ -20,7 +17,7 @@ class SessionCacheService implements ICache<ISession> {
     await this.memoryCache.set(key, valueInRedis);
     return valueInRedis;
   }
-  async set(key: string, value: ISession): Promise<void> {
+  async set(key: string, value: Session): Promise<void> {
     try {
       await this.memoryCache.set(key, value);
     } catch(err) {

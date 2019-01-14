@@ -1,5 +1,6 @@
 import Router, { IRouterContext } from 'koa-router';
 import sessionCacheService from './Cache/sessionCacheService';
+import { passAuthorizationMiddleware } from './types/generated/server/ServerBaseApiRouter';
 
 export default class AuthorizationPassService {
   private passingAuthorizationPathRegExpList: RegExp[] = [];
@@ -51,8 +52,4 @@ export default class AuthorizationPassService {
       }
     });
   }
-}
-
-export async function passAuthorizationMiddleware(ctx, next) {
-  return await next();
 }
