@@ -43,7 +43,7 @@ export function init() {
     console.log("yes");
     mainRouter.use('/post/:postId', (new ViewCountRouter()).routes())
   } else {
-    mainRouter.use('/user', UserApiRouter.routes());
+    mainRouter.use((new UserApiRouter()).getKoaRouter().routes());
     mainRouter.use('/post', PostApiRouter.routes());
     mainRouter.use('/board', BoardApiRouter.routes());
     mainRouter.use((new AuthenticationApiRouter()).getKoaRouter().routes());
