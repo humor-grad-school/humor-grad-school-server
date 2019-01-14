@@ -33,6 +33,7 @@
     "@types/node-fetch": "^2.1.4",
     "@types/redis": "^2.8.8",
     "@types/sharp": "^0.21.0",
+    "@types/uuid": "^3.4.4",
     "archiver": "^3.0.0",
     "fs-extra": "^7.0.1",
     "graphql-code-generator": "^0.15.2",
@@ -40,6 +41,7 @@
     "ignore": "^5.0.4",
     "nodemon": "^1.18.7",
     "serverless": "^1.35.1",
+    "serverless-domain-manager": "^2.6.11",
     "typescript": "^3.1.6"
   },
   "dependencies": {
