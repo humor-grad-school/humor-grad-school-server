@@ -28,7 +28,6 @@ export default class AuthorizationPassService {
       }
 
       const sessionToken = authorizationHeader.substring('sessiontoken '.length);
-
       if (!sessionToken) {
         ctx.status = 401;
         return;

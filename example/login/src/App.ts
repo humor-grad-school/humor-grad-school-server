@@ -2,10 +2,10 @@ import { Component, Vue } from 'vue-property-decorator';
 
 import KakaoLoginComponent from './Kakao/KakaoLoginComponent.vue';
 import FacebookLoginComponent from './Facebook/FacebookLoginComponent.vue';
-import login from './Api/login';
-import { ErrorCode } from '../../../src/Api/ErrorCode';
 import { runTest } from './test/test';
 import Avatar from './Avatar/Avatar.vue';
+import { HgsRestApi } from './Api/generated/client/ClientApis';
+import { ErrorCode } from './Api/generated/ErrorCode';
 
 export function is2xx(response: Response) {
   return response.status >= 200 && response.status < 300;
@@ -61,12 +61,20 @@ export default class App extends Vue {
   }) {
     this.authenticationRequestData = authenticationRequestData;
     this.origin = origin;
-    try {
-      await login(this.authenticationRequestData, this.origin);
-      this.isLoginSuccessful = true;
-    } catch(errorCode) {
-      console.error(errorCode);
-      switch (errorCode) {
+    const response = await HgsRestApi.authenticate({
+      origin,
+    }, {
+      authenticationRequestData,
+    });
+    this.isLoginSuccessful = response.isSuccessful;
+
+    if (response.isSuccessful) {
+      localStorage.setItem('sessionToken', response.data.sessionToken);
+      HgsRestApi.setSessionToken(response.data.sessionToken);
+    }
+
+    if (!response.isSuccessful) {
+      switch (response.errorCode) {
         case ErrorCode.AuthenticateErrorCode.NoUser: {
           this.isNeedSignUp = true;
           break;
@@ -78,7 +86,7 @@ export default class App extends Vue {
         default: {
           // internal error
           alert('Internal Error. Try Again!');
-          console.warn(errorCode);
+          console.warn(response.errorCode);
           break;
         }
       }

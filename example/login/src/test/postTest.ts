@@ -1,35 +1,38 @@
-import { requestPost, request } from './test';
+import { HgsRestApi } from '@/Api/generated/client/ClientApis';
 
-function createBoard() {
-  return requestPost(`board/${Math.random().toString(36).substr(2, 5)}`);
+async function createBoard() {
+  const boardName = Math.random().toString(36).substr(2, 5);
+  await HgsRestApi.createBoard({
+    boardName,
+  }, {});
+  return boardName;
 }
 
-function createPost(boardName) {
+async function createPost(boardName): Promise<number> {
   const title = Math.random().toString(36).substr(2, 5);
   const contentS3Key = Math.random().toString(36).substr(2, 5);
   console.log(`title: ${title}`);
   console.log(`contentS3Key: ${contentS3Key}`);
-  return requestPost(`post`, {
-    title,
-    contentS3Key,
+  const response = await HgsRestApi.writePost({}, {
     boardName,
+    contentS3Key,
+    title,
   });
+
+  if (!response.isSuccessful) {
+    throw new Error('fail to create post');
+  }
+
+  return response.data.postId;
 }
 
-function getBoard(boardName) {
-  return request(`board/${boardName}`);
-}
-
-export default async function writeTest() {
-  const { name: boardName } = await createBoard();
+export default async function writeTest(): Promise<number> {
+  const boardName = await createBoard();
 
   console.log(`boardName : ${boardName}`);
 
-  const board = await getBoard(boardName);
-  console.log(board);
+  const postId = await createPost(boardName);
+  console.log(postId);
 
-  const post = await createPost(boardName);
-  console.log(post);
-
-  return post;
+  return postId;
 }

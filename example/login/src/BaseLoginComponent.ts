@@ -1,5 +1,5 @@
 import { Vue, Emit } from 'vue-property-decorator';
-import { is2xx } from './App';
+import { HgsRestApi } from './Api/generated/client/ClientApis';
 
 export default abstract class BaseLoginComponent extends Vue {
   public isLoginFinished: boolean = false;
@@ -23,27 +23,17 @@ export default abstract class BaseLoginComponent extends Vue {
   }
 
   public async signUp() {
-    const response = await fetch('http://localhost:8080/user', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        username: this.username,
-        origin: this.origin,
-        authenticationRequestData: this.authenticationRequestData,
-      }),
+    const result = await HgsRestApi.signUp({}, {
+      username: this.username as string,
+      origin: this.origin,
+      authenticationRequestData: this.authenticationRequestData,
     });
 
-    if (is2xx(response)) {
+    if (result.isSuccessful) {
       this.isNeedSignUp = false;
       return;
     }
-
-    const body = await response.json();
-
-    // TODO : Error Handling
-    alert(`Failed for sign up : ${JSON.stringify(body, null, 2)}`);
+    alert(`Failed for sign up : ${result.errorCode}`);
   }
 
   protected onThirdPartyLoginSuccessful(authenticationRequestData: any) {

@@ -1,5 +1,7 @@
-import { requestPost } from './test';
+import { HgsRestApi } from '@/Api/generated/client/ClientApis';
 
 export default async function likePost(postId) {
-  await requestPost(`post/${postId}/like`);
+  await HgsRestApi.likePost({
+    postId,
+  }, {});
 }

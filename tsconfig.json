@@ -1,24 +1,27 @@
 {
-    "compilerOptions": {
-        "module": "commonjs",
-        "esModuleInterop": true,
-        "target": "es2017",
-        "moduleResolution": "node",
-        "experimentalDecorators": true,
-        "resolveJsonModule": true,
-        "sourceMap": true,
-        "baseUrl": ".",
-        "outDir": "dist",
-        "lib": [
-            "esnext"
-        ],
-        "paths": {
-            "@/*": [
-                "src/*"
-            ]
-        }
-    },
-    "include": [
-        "src/**/*"
-    ]
+  "compilerOptions": {
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "target": "es2017",
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "outDir": "dist",
+    "lib": [
+      "esnext"
+    ],
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    }
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "src/Api/types/generated/client"
+  ]
 }

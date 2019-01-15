@@ -1,72 +1,105 @@
-import Router from 'koa-router';
-import PostModel from '@/Model/PostModel';
-import validateBody from './validateBody';
+import { BasePostApiRouter, HgsRouterContext } from "./types/generated/server/ServerBaseApiRouter";
+import { ParamMap } from "./types/generated/ParamMap";
+import { RequestBodyType } from "./types/generated/RequestBodyType";
+import { ResponseType } from './types/generated/ResponseType';
+import BoardModel from "@/Model/BoardModel";
+import PostModel from "@/Model/PostModel";
+import { getConfiguration } from "@/configuration";
+import router from "./CommentApiRouter";
+import { transaction } from "objection";
+import encode from "./encode/encode";
+import { ErrorCode } from "./types/generated/ErrorCode";
 
-import encode from './encode/encode';
-import BoardModel from '@/Model/BoardModel';
-import { transaction } from 'objection';
-import { getConfiguration } from '@/configuration';
-import { passAuthorizationMiddleware } from './types/generated/server/ServerBaseApiRouter';
+export default class PostApiRouter extends BasePostApiRouter {
+  protected async writePost(
+    paramMap: ParamMap.WritePostParamMap,
+    body: RequestBodyType.WritePostRequestBodyType,
+    context: HgsRouterContext,
+  ): Promise<ResponseType.WritePostResponseType> {
+    const writerId = context.session.userId;
 
-const router = new Router();
+    // TODO: Get first image from post content, and make thumbnail.
 
-class PostPostBody {
-  title: string;
-  contentS3Key: string;
-  boardName: string;
+    const board = await BoardModel.query().findOne({ name: body.boardName });
+
+    const post = await PostModel.query().insert({
+      title: body.title,
+      contentS3Key: body.contentS3Key,
+      writerId,
+      boardId: board.id,
+      thumbnailUrl: PostModel.defaultThumbnailUrl,
+    });
+
+    return {
+      isSuccessful: true,
+      data: {
+        postId: post.id,
+      },
+    };
+  }
+  protected async encodeMedia(
+    paramMap: ParamMap.EncodeMediaParamMap,
+    body: RequestBodyType.EncodeMediaRequestBodyType,
+    context: HgsRouterContext,
+  ): Promise<ResponseType.EncodeMediaResponseType> {
+    const {
+      s3Key,
+    } = paramMap;
+    await encode(s3Key, getConfiguration().AFTER_ENCODING_S3_BUCKET, s3Key);
+    // TODO : return url of media
+    return {
+      isSuccessful: true,
+    };
+  }
+
+  protected async likePost(
+    paramMap: ParamMap.LikePostParamMap,
+    body: RequestBodyType.LikePostRequestBodyType,
+    context: HgsRouterContext,
+  ): Promise<ResponseType.LikePostResponseType> {
+    const { postId } = paramMap;
+
+    const post = await PostModel.query().findById(postId);
+
+    if (!post) {
+      return {
+        isSuccessful: false,
+        errorCode: ErrorCode.LikePostErrorCode.NotFoundPost,
+      };
+    }
+
+    const { userId } = context.session;
+    await transaction(PostModel.knex(), async (trx) => {
+      // If user already liked, then this query will day 'duplicated primary key'.
+      await post.$relatedQuery('likers', trx).relate(userId);
+
+      await post.$query(trx).increment('likes', 1);
+    });
+
+    return {
+      isSuccessful: true,
+    };
+  }
 }
 
-router.post('/', validateBody(PostPostBody), async ctx => {
-  const body = ctx.request.body as PostPostBody;
-  const writerId = ctx.session.userId;
+// router.post('/:postId/like', async ctx => {
+//   const { postId } = ctx.params;
 
-  // TODO: Get first image from post content, and make thumbnail.
+//   const post = await PostModel.query().findById(postId);
 
-  const board = await BoardModel.query().findOne({ name: body.boardName });
-  const post = await PostModel.query().insert({
-    title: body.title,
-    contentS3Key: body.contentS3Key,
-    writerId,
-    boardId: board.id,
-    thumbnailUrl: PostModel.defaultThumbnailUrl,
-  });
-  ctx.body = post;
-});
+//   if (!post) {
+//     return ctx.status = 404;
+//   }
 
-router.get('/:id', passAuthorizationMiddleware, async ctx => {
-  const { id } = ctx.params;
-  const post = await PostModel.query().findById(id).eager('comments');
-  if (!post) {
-    return ctx.status = 404;
-  }
-  ctx.body = post;
-});
+//   const { userId } = ctx.session;
+//   await transaction(PostModel.knex(), async (trx) => {
+//     // If user already liked, then this query will day 'duplicated primary key'.
+//     await post.$relatedQuery('likers', trx).relate(userId);
 
-router.post('/encode/:key', async ctx => {
-  const { key } = ctx.params;
-  await encode(key, getConfiguration().AFTER_ENCODING_S3_BUCKET, key);
-  // TODO : return url of media
-  ctx.status = 200;
-});
+//     await post.$query(trx).increment('likes', 1);
+//   });
 
-router.post('/:postId/like', async ctx => {
-  const { postId } = ctx.params;
+//   ctx.status = 200;
+// });
 
-  const post = await PostModel.query().findById(postId);
-
-  if (!post) {
-    return ctx.status = 404;
-  }
-
-  const { userId } = ctx.session;
-  await transaction(PostModel.knex(), async (trx) => {
-    // If user already liked, then this query will day 'duplicated primary key'.
-    await post.$relatedQuery('likers', trx).relate(userId);
-
-    await post.$query(trx).increment('likes', 1);
-  });
-
-  ctx.status = 200;
-});
-
-export default router;
+// export default router;

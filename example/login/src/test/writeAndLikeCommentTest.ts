@@ -1,12 +1,18 @@
-import { requestPost, request } from './test';
+import { HgsRestApi } from '@/Api/generated/client/ClientApis';
 
 export default async function writeAndLikeCommentTest(postId) {
-  const comment = await requestPost(`comment`, {
+  const commentId = HgsRestApi.writeComment({}, {
     contentS3Key: Math.random().toString(36).substr(2, 5),
     postId,
   });
-  const comment2 = await request(`comment/${comment.id}`);
-  console.log(comment2);
+  const subCommentId = HgsRestApi.writeSubComment({
+    parentCommentId: commentId.toString(),
+  }, {
+    contentS3Key: Math.random().toString(36).substr(2, 5),
+    postId,
+  });
 
-  await requestPost(`comment/${comment.id}/like`);
+  await HgsRestApi.likeComment({
+    commentId: commentId.toString(),
+  }, {});
 }

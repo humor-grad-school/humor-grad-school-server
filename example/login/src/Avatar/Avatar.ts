@@ -1,7 +1,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import requestGraphqlQuery from '@/Api/requestGraphqlQuery';
-import { request } from '@/test/test';
 import uploadWithPresignedUrl from '@/Api/uploadWithPresignedUrl';
+import { HgsRestApi } from '@/Api/generated/client/ClientApis';
 
 @Component({})
 export default class Avatar extends Vue {
@@ -30,17 +30,21 @@ export default class Avatar extends Vue {
     console.log(username, avatarUrl);
   }
   public async fileChange(file: File) {
+    const response = await HgsRestApi.requestPresignedPostFieldsForAvatar({}, {
+    });
+
     const {
       url,
       fields,
       key,
-    } = await request('user/avatar/presignedPost');
+    } = response.data;
 
     console.log(file);
 
     const result = await uploadWithPresignedUrl(url, fields, key, file);
     console.log(result);
-    await request('user/avatar', 'PUT', {
+
+    await HgsRestApi.updateAvatar({}, {
       key,
     });
     this.updateUserData();
