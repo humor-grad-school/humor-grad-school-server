@@ -86,6 +86,9 @@ const Post = new GraphQLObjectType({
         return viewCountService.isViewed(id, ip, userId);
       },
     },
+    views: {
+      type: new GraphQLNonNull(GraphQLInt),
+    },
     isLiked: {
       type: new GraphQLNonNull(GraphQLBoolean),
       sqlExpr: (postTable, args, context) => {
