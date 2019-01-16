@@ -81,7 +81,6 @@ const Post = new GraphQLObjectType({
         // UserID
         const { ip, session } = context;
         const userId = session && session.userId;
-        console.log(id, ip, session);
 
         return viewCountService.isViewed(id, ip, userId);
       },

@@ -25,7 +25,6 @@ export default class ViewCountService {
     try {
       if (this.viewCountMap[postId] === undefined) {
         const post = await this.postLoader.load(postId);
-
         if (!post) {
           console.log(`cannot find post but user request view count. postId: ${postId}`);
           return;
@@ -88,6 +87,7 @@ export default class ViewCountService {
         resolve();
       }
     });
+    await this.viewCountLockPromise;
   }
 
   async runFlushInterval() {

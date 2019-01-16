@@ -30,7 +30,7 @@ export function init() {
   if (isDevelopment) {
     const cors = require('@koa/cors');
     app.use(cors());
-    mainRouter.use('/post/:postId', (new ViewCountRouter()).routes())
+    mainRouter.use((new ViewCountRouter()).getKoaRouter().routes())
   }
 
   mainRouter.get('/health', passAuthorizationMiddleware, ctx => {
@@ -40,7 +40,7 @@ export function init() {
 
   if (process.env.IS_VIEW_COUNT_SERVER) {
     console.log("yes");
-    mainRouter.use('/post/:postId', (new ViewCountRouter()).routes())
+    mainRouter.use((new ViewCountRouter()).getKoaRouter().routes())
   } else {
     const routers = [
       new UserApiRouter(),
