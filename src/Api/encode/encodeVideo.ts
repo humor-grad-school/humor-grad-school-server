@@ -3,6 +3,7 @@ import uuid from 'uuid/v4';
 import fs from 'fs';
 import path from 'path';
 import { exec } from 'child_process';
+import { MediaSize } from './encode';
 
 const isWindows = process.platform === 'win32';
 
@@ -12,7 +13,6 @@ const execAsync = util.promisify(exec);
 
 const tmpDir = isWindows ? path.join(__dirname, '../../../tmp') : '/tmp';
 const binDir = path.join(__dirname, '../../../bin');
-const MAX_WIDTH = 300;
 
 const createTmpDirIfNotExistsPromise = new Promise((resolve, reject) => {
   fs.exists(tmpDir, (exists) => {
@@ -29,7 +29,7 @@ const createTmpDirIfNotExistsPromise = new Promise((resolve, reject) => {
   });
 });
 
-export default async function encodeVideo(buffer) {
+export default async function encodeVideo(buffer: Buffer, size: MediaSize) {
   await createTmpDirIfNotExistsPromise;
 
   const inputFilename = uuid();
@@ -40,7 +40,7 @@ export default async function encodeVideo(buffer) {
   await writeFileAsync(inputFilePath, buffer);
 
   // tslint:disable-next-line
-  const command = `ffmpeg${isWindows ? '.exe' : ''} -i ${inputFilePath} -c:v libx264 -vf "scale=w=min(iw\\,${MAX_WIDTH}):h=-2" -crf 24 ${outputFilePath}`;
+  const command = `ffmpeg${isWindows ? '.exe' : ''} -i ${inputFilePath} -c:v libx264 -vf "scale=w=min(iw\\,${size.maxWidth}):h=-2" -crf 24 ${outputFilePath}`;
   const { stdout, stderr } = await execAsync(command, {
     cwd: binDir,
   });

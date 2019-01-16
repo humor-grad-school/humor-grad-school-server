@@ -1,15 +1,32 @@
 import sharp from 'sharp';
+import { MediaSize } from './encode';
 
-const MAX_WIDTH = 300;
-
-export default async function encodeImage(buffer) {
+export default async function encodeImage(buffer: Buffer, size: MediaSize) {
   let image = sharp(buffer);
 
-  const { width } = await image.metadata();
+  const { width, height } = await image.metadata();
 
-  if (width <= MAX_WIDTH) {
-    image = image.resize(MAX_WIDTH);
+  let destWidth = width;
+  if (size.minWidth && destWidth < size.minWidth) {
+    destWidth = size.minWidth;
   }
+  if (size.maxWidth && destWidth > size.maxWidth) {
+    destWidth = size.maxWidth;
+  }
+
+  let destHeight = height;
+  if (!size.minHeight && !size.maxHeight) {
+    destHeight = undefined;
+  } else {
+    if (destHeight < size.minHeight) {
+      destHeight = size.minHeight;
+    }
+    if (destHeight > size.maxHeight) {
+      destHeight = size.maxHeight;
+    }
+  }
+
+  image = image.resize(destWidth, destHeight);
 
   const jpegBuffer = await image
     .jpeg({

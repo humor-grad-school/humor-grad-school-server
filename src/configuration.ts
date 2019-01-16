@@ -14,6 +14,7 @@ export class Configuration {
   CONTENT_S3_BUCKET = "content-s3-bucket";
   S3_DEVELOPMENT_PORT = 9000;
   THUMBNAIL_S3_BUCKET = "hgs-thumbnail";
+  AVATAR_S3_BUCKET = "hgs-avatar";
   avatarBaseUrl = "https://avatar.humorgrad.com";
 }
 

@@ -1,12 +1,12 @@
 import { HgsRestApi } from '@/Api/generated/client/ClientApis';
 
-async function createBoard() {
-  const boardName = Math.random().toString(36).substr(2, 5);
-  await HgsRestApi.createBoard({
-    boardName,
-  }, {});
-  return boardName;
-}
+// async function createBoard() {
+//   const boardName = Math.random().toString(36).substr(2, 5);
+//   await HgsRestApi.createBoard({
+//     boardName,
+//   }, {});
+//   return boardName;
+// }
 
 async function createPost(boardName): Promise<number> {
   const title = Math.random().toString(36).substr(2, 5);
@@ -27,7 +27,7 @@ async function createPost(boardName): Promise<number> {
 }
 
 export default async function writeTest(): Promise<number> {
-  const boardName = await createBoard();
+  const boardName = 'humor';
 
   console.log(`boardName : ${boardName}`);
 

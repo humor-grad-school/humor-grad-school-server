@@ -8,7 +8,7 @@ import { transaction } from "objection";
 import UserModel from "@/Model/UserModel";
 import s3Helper from "@/s3Helper";
 import { getConfiguration } from "@/configuration";
-import encode from "./encode/encode";
+import encode, { MediaSize } from "./encode/encode";
 
 export default class UserApiRouter extends BaseUserApiRouter {
   protected async signUp(
@@ -86,7 +86,13 @@ export default class UserApiRouter extends BaseUserApiRouter {
     const { key } = body;
     const { userId } = context.session;
 
-    const newAvatarS3Key = await encode(key, getConfiguration().THUMBNAIL_S3_BUCKET, `${userId}-${key}`);
+    const avatarSize: MediaSize = {
+      minWidth: 120,
+      maxWidth:120,
+      minHeight: 60,
+      maxHeight: 60,
+    }
+    const newAvatarS3Key = await encode(key, avatarSize, getConfiguration().AVATAR_S3_BUCKET, `${userId}-${key}`);
 
     await UserModel.query().update({
       avatarUrl: `${getConfiguration().avatarBaseUrl}/${newAvatarS3Key}`,

@@ -22,7 +22,7 @@ export default class PostModel extends Model {
 
   static tableName = 'posts';
 
-  static defaultThumbnailUrl = 'https://thumbnail.humorgrad.com/default.png';
+  static defaultThumbnailUrl = 'https://thumbnail.humorgrad.com/default.jpg';
 
   static relationMappings = () => ({
     writer: {

@@ -7,7 +7,7 @@ import PostModel from "@/Model/PostModel";
 import { getConfiguration } from "@/configuration";
 import router from "./CommentApiRouter";
 import { transaction } from "objection";
-import encode from "./encode/encode";
+import encode, { MediaSize } from "./encode/encode";
 import { ErrorCode } from "./types/generated/ErrorCode";
 
 export default class PostApiRouter extends BasePostApiRouter {
@@ -45,7 +45,10 @@ export default class PostApiRouter extends BasePostApiRouter {
     const {
       s3Key,
     } = paramMap;
-    await encode(s3Key, getConfiguration().AFTER_ENCODING_S3_BUCKET, s3Key);
+    const postImageSize: MediaSize = {
+      maxWidth: 1080,
+    }
+    await encode(s3Key, postImageSize, getConfiguration().AFTER_ENCODING_S3_BUCKET, s3Key);
     // TODO : return url of media
     return {
       isSuccessful: true,

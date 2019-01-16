@@ -10,7 +10,7 @@ export default class UserModel extends Model {
 
   static tableName = 'users';
 
-  static defaultAvatarUrl = 'https://avatar.humorgrad.com/default.png';
+  static defaultAvatarUrl = 'https://avatar.humorgrad.com/default.jpg';
   static avatarSizeLimit = 10 * 1000 * 1000;
 
   static relationMappings = () => ({
