@@ -67,17 +67,6 @@ export default class UserApiRouter extends BaseUserApiRouter {
       isSuccessful: true,
     };
   }
-  protected async requestPresignedPostFieldsForAvatar(
-    paramMap: ParamMap.RequestPresignedPostFieldsForAvatarParamMap,
-    body: RequestBodyType.RequestPresignedPostFieldsForAvatarRequestBodyType,
-    context: HgsRouterContext,
-  ): Promise<ResponseType.RequestPresignedPostFieldsForAvatarResponseType>
-  {
-    return {
-      isSuccessful: true,
-      data: await s3Helper.createPresignedPost(UserModel.avatarSizeLimit, getConfiguration().BEFORE_ENCODING_S3_BUCKET),
-    };
-  }
   protected async updateAvatar(
     paramMap: ParamMap.UpdateAvatarParamMap,
     body: RequestBodyType.UpdateAvatarRequestBodyType,

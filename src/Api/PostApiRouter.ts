@@ -5,10 +5,10 @@ import { ResponseType } from './types/generated/ResponseType';
 import BoardModel from "@/Model/BoardModel";
 import PostModel from "@/Model/PostModel";
 import { getConfiguration } from "@/configuration";
-import router from "./CommentApiRouter";
 import { transaction } from "objection";
 import encode, { MediaSize } from "./encode/encode";
 import { ErrorCode } from "./types/generated/ErrorCode";
+import s3Helper from "@/s3Helper";
 
 export default class PostApiRouter extends BasePostApiRouter {
   protected async writePost(
@@ -83,26 +83,14 @@ export default class PostApiRouter extends BasePostApiRouter {
       isSuccessful: true,
     };
   }
+  protected async requestPresignedPostFieldsForContent(
+    paramMap: ParamMap.RequestPresignedPostFieldsForContentParamMap,
+    body: RequestBodyType.RequestPresignedPostFieldsForContentRequestBodyType,
+    context: HgsRouterContext
+  ): Promise<ResponseType.RequestPresignedPostFieldsForContentResponseType> {
+    return {
+      isSuccessful: true,
+      data: await s3Helper.createPresignedPost(PostModel.contentSizeLimit, getConfiguration().CONTENT_S3_BUCKET),
+    };
+  }
 }
-
-// router.post('/:postId/like', async ctx => {
-//   const { postId } = ctx.params;
-
-//   const post = await PostModel.query().findById(postId);
-
-//   if (!post) {
-//     return ctx.status = 404;
-//   }
-
-//   const { userId } = ctx.session;
-//   await transaction(PostModel.knex(), async (trx) => {
-//     // If user already liked, then this query will day 'duplicated primary key'.
-//     await post.$relatedQuery('likers', trx).relate(userId);
-
-//     await post.$query(trx).increment('likes', 1);
-//   });
-
-//   ctx.status = 200;
-// });
-
-// export default router;

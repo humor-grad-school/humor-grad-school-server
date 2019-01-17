@@ -23,6 +23,7 @@ export default class PostModel extends Model {
   static tableName = 'posts';
 
   static defaultThumbnailUrl = 'https://thumbnail.humorgrad.com/default.jpg';
+  static contentSizeLimit = 5 * 1000 * 1000; // 5MB
 
   static relationMappings = () => ({
     writer: {

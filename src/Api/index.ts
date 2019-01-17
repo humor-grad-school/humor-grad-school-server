@@ -5,7 +5,6 @@ import graphqlHTTP from 'koa-graphql';
 import bodyParser from 'koa-bodyparser';
 import UserApiRouter from './UserApiRouter';
 import PostApiRouter from './PostApiRouter';
-import CommentApiRouter from './CommentApiRouter';
 import AuthenticationApiRouter from './AuthenticationApiRouter';
 import { isDevelopment } from '..';
 import AuthorizationPassService from './AuthorizationPassService';
@@ -13,6 +12,8 @@ import { schema } from './graphql/graphql';
 import ViewCountRouter from './ViewCountRouter';
 import { passAuthorizationMiddleware } from './types/generated/server/ServerBaseApiRouter';
 import BoardApiRouter from './BoardApiRouter';
+import MediaApiRouter from './MediaApiRouter';
+import CommentApiRouter from './CommentApiRouter';
 
 export const app = new Koa();
 
@@ -48,6 +49,7 @@ export function init() {
       new BoardApiRouter(),
       new AuthenticationApiRouter(),
       new CommentApiRouter(),
+      new MediaApiRouter(),
     ];
 
     routers.forEach((router) => {
