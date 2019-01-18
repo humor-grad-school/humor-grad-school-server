@@ -234,7 +234,6 @@ export const Query = new GraphQLObjectType({
       type: new GraphQLNonNull(new GraphQLList(Board)),
       resolve: (parent, args, context, resolveInfo) => {
         return joinMonster(resolveInfo, context, async sql => {
-          console.log(sql);
           const result = await knex.raw(sql);
           return result[0];
         }, {
@@ -247,7 +246,19 @@ export const Query = new GraphQLObjectType({
       args: {
         name: { type: new GraphQLNonNull(GraphQLString) },
       },
-      where: (usersTable, args) => `${usersTable}.name = "${args.name}"`,
+      where: (boardTable, args) => `${boardTable}.name = "${args.name}"`,
+      resolve: (parent, args, context, resolveInfo) => {
+        return joinMonster(resolveInfo, context, async sql => {
+          const result = await knex.raw(sql);
+          return result[0];
+        }, {
+          dialect: 'mariadb',
+        });
+      },
+    },
+    bestPosts: {
+      type: new GraphQLNonNull(new GraphQLList(Post)),
+      where: (postTable, args) => `${postTable}.likes >= 10`,
       resolve: (parent, args, context, resolveInfo) => {
         return joinMonster(resolveInfo, context, async sql => {
           const result = await knex.raw(sql);
