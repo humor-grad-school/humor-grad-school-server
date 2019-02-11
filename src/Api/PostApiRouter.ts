@@ -1,5 +1,4 @@
 import { BasePostApiRouter, HgsRouterContext } from "./types/generated/server/ServerBaseApiRouter";
-import { ParamMap } from "./types/generated/ParamMap";
 import { RequestBodyType } from "./types/generated/RequestBodyType";
 import { ResponseType } from './types/generated/ResponseType';
 import BoardModel from "@/Model/BoardModel";
@@ -12,19 +11,21 @@ import s3Helper from "@/s3Helper";
 
 export default class PostApiRouter extends BasePostApiRouter {
   protected async writePost(
-    paramMap: ParamMap.WritePostParamMap,
-    body: RequestBodyType.WritePostRequestBodyType,
     context: HgsRouterContext,
+    title: string,
+    contentS3Key: string,
+    boardName: string,
+    thumbnailKey?: string,
   ): Promise<ResponseType.WritePostResponseType> {
     const writerId = context.session.userId;
 
     // TODO: Get first image from post content, and make thumbnail.
 
-    const board = await BoardModel.query().findOne({ name: body.boardName });
+    const board = await BoardModel.query().findOne({ name: boardName });
 
     const post = await PostModel.query().insert({
-      title: body.title,
-      contentS3Key: body.contentS3Key,
+      title: title,
+      contentS3Key: contentS3Key,
       writerId,
       boardId: board.id,
       thumbnailUrl: PostModel.defaultThumbnailUrl,
@@ -38,13 +39,9 @@ export default class PostApiRouter extends BasePostApiRouter {
     };
   }
   protected async encodeMedia(
-    paramMap: ParamMap.EncodeMediaParamMap,
-    body: RequestBodyType.EncodeMediaRequestBodyType,
     context: HgsRouterContext,
+    s3Key: string,
   ): Promise<ResponseType.EncodeMediaResponseType> {
-    const {
-      s3Key,
-    } = paramMap;
     const postImageSize: MediaSize = {
       maxWidth: 1080,
     }
@@ -54,13 +51,10 @@ export default class PostApiRouter extends BasePostApiRouter {
       isSuccessful: true,
     };
   }
-
   protected async likePost(
-    paramMap: ParamMap.LikePostParamMap,
-    body: RequestBodyType.LikePostRequestBodyType,
     context: HgsRouterContext,
+    postId: number,
   ): Promise<ResponseType.LikePostResponseType> {
-    const { postId } = paramMap;
 
     const post = await PostModel.query().findById(postId);
 
@@ -84,8 +78,6 @@ export default class PostApiRouter extends BasePostApiRouter {
     };
   }
   protected async requestPresignedPostFieldsForContent(
-    paramMap: ParamMap.RequestPresignedPostFieldsForContentParamMap,
-    body: RequestBodyType.RequestPresignedPostFieldsForContentRequestBodyType,
     context: HgsRouterContext
   ): Promise<ResponseType.RequestPresignedPostFieldsForContentResponseType> {
     return {

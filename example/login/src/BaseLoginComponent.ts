@@ -23,7 +23,7 @@ export default abstract class BaseLoginComponent extends Vue {
   }
 
   public async signUp() {
-    const result = await HgsRestApi.signUp({}, {
+    const result = await HgsRestApi.signUp({
       username: this.username as string,
       origin: this.origin,
       authenticationRequestData: this.authenticationRequestData,

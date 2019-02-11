@@ -1,6 +1,4 @@
 import { HgsRouterContext, BaseCommentApiRouter } from "./types/generated/server/ServerBaseApiRouter";
-import { ParamMap } from "./types/generated/ParamMap";
-import { RequestBodyType } from "./types/generated/RequestBodyType";
 import { ResponseType } from './types/generated/ResponseType';
 import CommentModel from "@/Model/CommentModel";
 import { transaction } from "objection";
@@ -8,15 +6,11 @@ import { ErrorCode } from "./types/generated/ErrorCode";
 
 export default class CommentApiRouter extends BaseCommentApiRouter {
   protected async writeComment(
-    paramMap: ParamMap.WriteCommentParamMap,
-    body: RequestBodyType.WriteCommentRequestBodyType,
     context: HgsRouterContext,
+    contentS3Key: string,
+    postId: number,
   ): Promise<ResponseType.WriteCommentResponseType> {
     const { userId } = context.session;
-    const {
-      postId,
-      contentS3Key,
-    } = body;
 
     const comment = await CommentModel.query().insert({
       writerId: userId,
@@ -32,11 +26,9 @@ export default class CommentApiRouter extends BaseCommentApiRouter {
   }
 
   protected async likeComment(
-    paramMap: ParamMap.LikeCommentParamMap,
-    body: RequestBodyType.LikeCommentRequestBodyType,
     context: HgsRouterContext,
+    commentId: number,
   ): Promise<ResponseType.LikeCommentResponseType> {
-    const { commentId } = paramMap;
     const { userId } = context.session;
 
     const comment = await CommentModel.query().findById(commentId);
@@ -61,15 +53,11 @@ export default class CommentApiRouter extends BaseCommentApiRouter {
   }
 
   protected async writeSubComment(
-    paramMap: ParamMap.WriteSubCommentParamMap,
-    body: RequestBodyType.WriteSubCommentRequestBodyType,
     context: HgsRouterContext,
+    parentCommentId: string,
+    contentS3Key: string,
+    postId: number,
   ): Promise<ResponseType.WriteSubCommentResponseType> {
-    const { parentCommentId } = paramMap;
-    const {
-      contentS3Key,
-      postId,
-    } = body;
 
     await CommentModel.query().insert({
       writerId: context.session.userId,

@@ -2,65 +2,44 @@
 import { ErrorCode } from './ErrorCode';
 
 export namespace ResponseDataType {
-  export interface BaseResponseDataType {
-
-  }
 
   export interface AuthenticateResponseDataType {
     sessionToken: string;
-  }
-
-  export interface SignUpResponseDataType {
-
-  }
-
-  export interface RequestPresignedPostFieldsForAvatarResponseDataType {
-    url: string;
-    fields: { [key: string]: string }
-    key: string;
-  }
-
-  export interface UpdateAvatarResponseDataType {
-
   }
 
   export interface WritePostResponseDataType {
     postId: number;
   }
 
-  export interface EncodeMediaResponseDataType {
-
-  }
-
-  export interface LikePostResponseDataType {
-
-  }
-
-  export interface CreateBoardResponseDataType {
-
+  export interface RequestPresignedPostFieldsForContentResponseDataType {
+    url: string;
+    fields: { [key: string]: string };
+    key: string;
   }
 
   export interface WriteCommentResponseDataType {
     commentId: number;
   }
 
-  export interface LikeCommentResponseDataType {
-
-  }
-
   export interface WriteSubCommentResponseDataType {
     commentId: number;
+  }
+
+  export interface RequestPresignedPostFieldsForMediaResponseDataType {
+    url: string;
+    fields: { [key: string]: string };
+    key: string;
   }
 }
 
 export namespace ResponseType {
-  export interface BaseResponseType {
+  export interface NoDataResponseType {
     isSuccessful: boolean;
     errorCode?: string;
-    data?: {};
   }
-  export interface DefaultResponseType extends BaseResponseType {
-    errorCode?: ErrorCode.DefaultErrorCode;
+
+  export interface BaseResponseType extends NoDataResponseType {
+    data?: {};
   }
 
   export interface AuthenticateResponseType extends BaseResponseType {
@@ -70,11 +49,6 @@ export namespace ResponseType {
 
   export interface SignUpResponseType extends BaseResponseType {
     errorCode?: ErrorCode.SignUpErrorCode | ErrorCode.DefaultErrorCode;
-  }
-
-  export interface RequestPresignedPostFieldsForAvatarResponseType extends BaseResponseType {
-    errorCode?: ErrorCode.DefaultErrorCode;
-    data?: ResponseDataType.RequestPresignedPostFieldsForAvatarResponseDataType;
   }
 
   export interface UpdateAvatarResponseType extends BaseResponseType {
@@ -94,6 +68,11 @@ export namespace ResponseType {
     errorCode?: ErrorCode.LikePostErrorCode | ErrorCode.DefaultErrorCode;
   }
 
+  export interface RequestPresignedPostFieldsForContentResponseType extends NoDataResponseType {
+    errorCode?: ErrorCode.DefaultErrorCode;
+    data?: ResponseDataType.RequestPresignedPostFieldsForContentResponseDataType;
+  }
+
   export interface CreateBoardResponseType extends BaseResponseType {
     errorCode?: ErrorCode.DefaultErrorCode;
   }
@@ -110,5 +89,14 @@ export namespace ResponseType {
   export interface WriteSubCommentResponseType extends BaseResponseType {
     errorCode?: ErrorCode.WriteSubCommentErrorCode | ErrorCode.DefaultErrorCode;
     data?: ResponseDataType.WriteSubCommentResponseDataType;
+  }
+
+  export interface IncreaseViewCountResponseType extends BaseResponseType {
+    errorCode?: ErrorCode.DefaultErrorCode;
+  }
+
+  export interface RequestPresignedPostFieldsForMediaResponseType extends NoDataResponseType {
+    errorCode?: ErrorCode.DefaultErrorCode;
+    data?: ResponseDataType.RequestPresignedPostFieldsForMediaResponseDataType;
   }
 }

@@ -13,7 +13,7 @@ async function createPost(boardName): Promise<number> {
   const contentS3Key = Math.random().toString(36).substr(2, 5);
   console.log(`title: ${title}`);
   console.log(`contentS3Key: ${contentS3Key}`);
-  const response = await HgsRestApi.writePost({}, {
+  const response = await HgsRestApi.writePost({
     boardName,
     contentS3Key,
     title,

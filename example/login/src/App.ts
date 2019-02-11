@@ -63,7 +63,6 @@ export default class App extends Vue {
     this.origin = origin;
     const response = await HgsRestApi.authenticate({
       origin,
-    }, {
       authenticationRequestData,
     });
     this.isLoginSuccessful = response.isSuccessful;

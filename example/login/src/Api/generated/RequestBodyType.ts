@@ -1,59 +1,60 @@
 
 export namespace RequestBodyType {
-  export interface BaseRequestBodyType {
-  }
 
-  export interface AuthenticateRequestBodyType extends BaseRequestBodyType {
+  export interface AuthenticateRequestBodyType {
+    origin: string;
     authenticationRequestData: {
       idToken: string;
-    }
+    };
   }
 
-  export interface SignUpRequestBodyType extends BaseRequestBodyType {
+  export interface SignUpRequestBodyType {
     username: string;
     origin: string;
     authenticationRequestData: {
       idToken: string;
-    }
+    };
   }
 
-  export interface RequestPresignedPostFieldsForAvatarRequestBodyType extends BaseRequestBodyType {
-
-  }
-
-  export interface UpdateAvatarRequestBodyType extends BaseRequestBodyType {
+  export interface UpdateAvatarRequestBodyType {
     key: string;
   }
 
-  export interface WritePostRequestBodyType extends BaseRequestBodyType {
+  export interface WritePostRequestBodyType {
     title: string;
     contentS3Key: string;
     boardName: string;
+    thumbnailKey?: string;
   }
 
-  export interface EncodeMediaRequestBodyType extends BaseRequestBodyType {
-
+  export interface EncodeMediaRequestBodyType {
+    s3Key: string;
   }
 
-  export interface LikePostRequestBodyType extends BaseRequestBodyType {
-
+  export interface LikePostRequestBodyType {
+    postId: number;
   }
 
-  export interface CreateBoardRequestBodyType extends BaseRequestBodyType {
-
+  export interface CreateBoardRequestBodyType {
+    boardName: string;
   }
 
-  export interface WriteCommentRequestBodyType extends BaseRequestBodyType {
+  export interface WriteCommentRequestBodyType {
     contentS3Key: string;
     postId: number;
   }
 
-  export interface LikeCommentRequestBodyType extends BaseRequestBodyType {
-
+  export interface LikeCommentRequestBodyType {
+    commentId: number;
   }
 
-  export interface WriteSubCommentRequestBodyType extends BaseRequestBodyType {
+  export interface WriteSubCommentRequestBodyType {
+    parentCommentId: string;
     contentS3Key: string;
+    postId: number;
+  }
+
+  export interface IncreaseViewCountRequestBodyType {
     postId: number;
   }
 }

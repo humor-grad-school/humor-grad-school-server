@@ -11,7 +11,9 @@
     "watch-start": "nodemon --watch dist dist/local.js",
     "start": "node dist/local.js",
     "gen": "gql-gen --config codegen.yml",
-    "watch-gen": "gql-gen --watch --config codegen.yml"
+    "watch-gen": "gql-gen --watch --config codegen.yml",
+    "gen-type": "node src/Api/types/generateAll src/Api/types/generated",
+    "watch-gen-type": "node src/Api/types/watch src/Api/types/generated"
   },
   "repository": {
     "type": "git",

@@ -30,8 +30,7 @@ export default class Avatar extends Vue {
     console.log(username, avatarUrl);
   }
   public async fileChange(file: File) {
-    const response = await HgsRestApi.requestPresignedPostFieldsForAvatar({}, {
-    });
+    const response = await HgsRestApi.requestPresignedPostFieldsForMedia();
 
     const {
       url,
@@ -44,7 +43,7 @@ export default class Avatar extends Vue {
     const result = await uploadWithPresignedUrl(url, fields, key, file);
     console.log(result);
 
-    await HgsRestApi.updateAvatar({}, {
+    await HgsRestApi.updateAvatar({
       key,
     });
     this.updateUserData();

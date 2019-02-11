@@ -1,7 +1,5 @@
 import { BaseAuthenticationApiRouter, HgsRouterContext, Session } from "./types/generated/server/ServerBaseApiRouter";
-import { ParamMap } from "./types/generated/ParamMap";
 import { ResponseType } from "./types/generated/ResponseType";
-import { RequestBodyType } from "./types/generated/RequestBodyType";
 import { getAuthenticationService } from "./AuthenticationService";
 import { ErrorCode } from "./ErrorCode";
 import UserModel from "@/Model/UserModel";
@@ -18,12 +16,12 @@ async function issueSessionToken(user: UserModel): Promise<string> {
 }
 
 export default class AuthenticationApiRouter extends BaseAuthenticationApiRouter {
-  protected async authenticate(paramMap: ParamMap.AuthenticateParamMap, body: RequestBodyType.AuthenticateRequestBodyType, context: HgsRouterContext): Promise<ResponseType.AuthenticateResponseType> {
-    const { origin } = paramMap;
-    const {
-      authenticationRequestData,
-    } = body;
-
+  protected async authenticate(
+    context: HgsRouterContext,
+    origin: string,
+    authenticationRequestData: { idToken: string; },
+  ): Promise<ResponseType.AuthenticateResponseType> {
+    console.log(origin, authenticationRequestData);
     const authenticationService = getAuthenticationService(origin);
 
     if (!authenticationService) {

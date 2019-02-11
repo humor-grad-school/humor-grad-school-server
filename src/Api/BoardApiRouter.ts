@@ -1,17 +1,13 @@
 import { HgsRouterContext, BaseBoardApiRouter } from "./types/generated/server/ServerBaseApiRouter";
-import { ParamMap } from "./types/generated/ParamMap";
-import { RequestBodyType } from "./types/generated/RequestBodyType";
 import { ResponseType } from './types/generated/ResponseType';
 import BoardModel from "@/Model/BoardModel";
 import { isDevelopment } from "..";
 
 export default class BoardApiRouter extends BaseBoardApiRouter {
   protected async createBoard(
-    paramMap: ParamMap.CreateBoardParamMap,
-    body: RequestBodyType.CreateBoardRequestBodyType,
-    context: HgsRouterContext
+    context: HgsRouterContext,
+    boardName: string,
   ): Promise<ResponseType.CreateBoardResponseType> {
-    const { boardName } = paramMap;
 
     if (!isDevelopment) {
       return {

@@ -1,26 +1,19 @@
 import { HgsRouterContext, BaseUserApiRouter } from "./types/generated/server/ServerBaseApiRouter";
-import { ParamMap } from "./types/generated/ParamMap";
 import { ResponseType } from "./types/generated/ResponseType";
-import { RequestBodyType } from "./types/generated/RequestBodyType";
 import { getAuthenticationService } from "./AuthenticationService";
 import { ErrorCode } from "./types/generated/ErrorCode";
 import { transaction } from "objection";
 import UserModel from "@/Model/UserModel";
-import s3Helper from "@/s3Helper";
 import { getConfiguration } from "@/configuration";
 import encode, { MediaSize } from "./encode/encode";
 
 export default class UserApiRouter extends BaseUserApiRouter {
   protected async signUp(
-    paramMap: ParamMap.SignUpParamMap,
-    body: RequestBodyType.SignUpRequestBodyType,
-    context: HgsRouterContext)
-  : Promise<ResponseType.SignUpResponseType> {
-    const {
-      username,
-      origin,
-      authenticationRequestData,
-    } = body;
+    context: HgsRouterContext,
+    username: string,
+    origin: string,
+    authenticationRequestData: { idToken: string; },
+  ): Promise<ResponseType.SignUpResponseType> {
 
     const authenticationService = getAuthenticationService(origin);
 
@@ -68,11 +61,9 @@ export default class UserApiRouter extends BaseUserApiRouter {
     };
   }
   protected async updateAvatar(
-    paramMap: ParamMap.UpdateAvatarParamMap,
-    body: RequestBodyType.UpdateAvatarRequestBodyType,
-    context: HgsRouterContext
+    context: HgsRouterContext,
+    key: string,
   ): Promise<ResponseType.UpdateAvatarResponseType> {
-    const { key } = body;
     const { userId } = context.session;
 
     const avatarSize: MediaSize = {
