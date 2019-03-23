@@ -6,6 +6,7 @@ import { transaction } from "objection";
 import UserModel from "@/Model/UserModel";
 import { getConfiguration } from "@/configuration";
 import encode, { MediaSize } from "./encode/encode";
+import { RequestInformation } from "./AuthenticationService/BaseAuthenticationService";
 
 export default class UserApiRouter extends BaseUserApiRouter {
   protected async signUp(
@@ -24,7 +25,11 @@ export default class UserApiRouter extends BaseUserApiRouter {
       };
     }
 
-    const authResult = await authenticationService.authenticateRequest(authenticationRequestData);
+    const requestInformation: RequestInformation = {
+      ip: context.ip,
+    };
+
+    const authResult = await authenticationService.authenticateRequest(authenticationRequestData, requestInformation);
 
     if (!authResult) {
       return {

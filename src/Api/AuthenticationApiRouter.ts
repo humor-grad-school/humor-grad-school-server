@@ -5,6 +5,7 @@ import { ErrorCode } from "./ErrorCode";
 import UserModel from "@/Model/UserModel";
 import uuid from 'uuid/v4';
 import sessionCacheService from "./Cache/sessionCacheService";
+import { RequestInformation } from "./AuthenticationService/BaseAuthenticationService";
 
 async function issueSessionToken(user: UserModel): Promise<string> {
   const sessionToken = uuid();
@@ -32,7 +33,11 @@ export default class AuthenticationApiRouter extends BaseAuthenticationApiRouter
       };
     }
 
-    const authResult = await authenticationService.authenticateRequest(authenticationRequestData);
+    const requestInformation: RequestInformation = {
+      ip: context.ip,
+    };
+
+    const authResult = await authenticationService.authenticateRequest(authenticationRequestData, requestInformation);
 
     if (!authResult) {
       console.warn('authentication failed'); // TODO : Add more Information
