@@ -268,6 +268,21 @@ export const Query = new GraphQLObjectType({
         });
       },
     },
+    post: {
+      type: Post,
+      args: {
+        postId: { type: new GraphQLNonNull(GraphQLInt) },
+      },
+      where: (postTable, args) => `${postTable}.id = ${args.postId}`,
+      resolve: (parent, args, context, resolveInfo) => {
+        return joinMonster(resolveInfo, context, async sql => {
+          const result = await knex.raw(sql);
+          return result[0];
+        }, {
+          dialect: 'mariadb',
+        });
+      },
+    }
   }),
 });
 
