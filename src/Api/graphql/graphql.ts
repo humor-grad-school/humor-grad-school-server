@@ -10,6 +10,12 @@ import {
   GraphQLNonNull,
   GraphQLScalarType,
 } from 'graphql'
+import {
+  connectionArgs,
+  connectionDefinitions,
+  connectionFromArray,
+  forwardConnectionArgs,
+} from 'graphql-relay'
 import { knex } from '@/dbHelper';
 import { GraphQLAllTypes } from '@/generated/graphql';
 import { IRouterContext } from 'koa-router';
@@ -129,6 +135,8 @@ const Post = new GraphQLObjectType({
   }),
 } as GraphQLObjectTypeConfig<any, IRouterContext>);
 
+const { connectionType: PostConnection } = connectionDefinitions({ nodeType: Post })
+
 const Comment = new GraphQLObjectType({
   name: 'Comment',
   sqlTable: 'comments',
@@ -176,7 +184,7 @@ const Board = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLString),
     },
     posts: {
-      type: new GraphQLNonNull(new GraphQLList(Post)),
+      type: new GraphQLList(Post),
       args: {
         page: {
           type: new GraphQLNonNull(GraphQLInt),
@@ -185,11 +193,12 @@ const Board = new GraphQLObjectType({
           type: new GraphQLNonNull(GraphQLInt),
         },
       },
-      limit: 5,
-      orderBy: {
-        id: 'desc',
+      sqlJoin: async (boardTable, postTable, args) => {
+        const { page, pageSize } = args;
+        const postModels = await PostModel.query().select('id').orderBy('id', 'desc').offset(page * pageSize).limit(pageSize);
+        const ids = postModels.map(postModel => postModel.id);
+        return `${boardTable}.id = ${postTable}.boardId AND ${postTable}.id IN (${ids.join(', ')})`;
       },
-      sqlJoin: (boardTable, postTable) => `${boardTable}.id = ${postTable}.boardId`,
     },
     createdAt: {
       type: new GraphQLNonNull(DateType),
@@ -249,6 +258,7 @@ export const Query = new GraphQLObjectType({
       where: (boardTable, args) => `${boardTable}.name = "${args.name}"`,
       resolve: (parent, args, context, resolveInfo) => {
         return joinMonster(resolveInfo, context, async sql => {
+          console.log(sql);
           const result = await knex.raw(sql);
           return result[0];
         }, {
@@ -351,4 +361,4 @@ function testSchema() {
   }
 }
 
-testSchema();
+// testSchema();

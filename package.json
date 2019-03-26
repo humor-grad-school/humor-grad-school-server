@@ -55,7 +55,7 @@
     "form-data": "^2.3.3",
     "google-auth-library": "^2.0.1",
     "graphql": "^0.13.2",
-    "join-monster2": "^2.1.0",
+    "join-monster2": "^2.1.1",
     "knex": "^0.15.2",
     "koa": "^2.6.2",
     "koa-bodyparser": "^4.2.1",
