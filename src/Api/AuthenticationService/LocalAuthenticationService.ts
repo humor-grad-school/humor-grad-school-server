@@ -8,8 +8,8 @@ export default class LocalAuthenticationService extends BaseAuthenticationServic
   async authenticateRequest(requestData: AuthenticationRequestData, requestInformation: RequestInformation): Promise<IAuthResult> {
     const { ip } = requestInformation;
     console.log(ip);
-    const isLocalRequest = ['localhost', '127.0.0.1', '::ffff:127.0.0.1'].includes(ip);
-    if (!isLocalRequest) {
+    const isLocalOrLoopbackRequest = ['localhost', '127.0.0.1', '::ffff:127.0.0.1', '::1', '127.0.0.0', '255.255.255.0'].includes(ip);
+    if (!isLocalOrLoopbackRequest) {
       return null;
     }
 
