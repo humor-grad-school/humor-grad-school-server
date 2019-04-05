@@ -10,12 +10,6 @@ import {
   GraphQLNonNull,
   GraphQLScalarType,
 } from 'graphql'
-import {
-  connectionArgs,
-  connectionDefinitions,
-  connectionFromArray,
-  forwardConnectionArgs,
-} from 'graphql-relay'
 import { knex } from '@/dbHelper';
 import { GraphQLAllTypes } from '@/generated/graphql';
 import { IRouterContext } from 'koa-router';
@@ -134,8 +128,6 @@ const Post = new GraphQLObjectType({
     },
   }),
 } as GraphQLObjectTypeConfig<any, IRouterContext>);
-
-const { connectionType: PostConnection } = connectionDefinitions({ nodeType: Post })
 
 const Comment = new GraphQLObjectType({
   name: 'Comment',
