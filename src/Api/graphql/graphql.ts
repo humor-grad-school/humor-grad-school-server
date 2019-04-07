@@ -143,7 +143,7 @@ const Comment = new GraphQLObjectType({
     },
     parentComment: {
       type: Comment,
-      sqlJoin: (commentTable) => `${commentTable}.parentCommentId = ${commentTable}.id`,
+      sqlJoin: (commentTable, parentCommentTable) => `${commentTable}.parentCommentId = ${parentCommentTable}.id`,
     },
     post : {
       type: new GraphQLNonNull(Post),
