@@ -54,7 +54,7 @@ export default class CommentApiRouter extends BaseCommentApiRouter {
 
   protected async writeSubComment(
     context: HgsRouterContext,
-    parentCommentId: string,
+    parentCommentId: number,
     contentS3Key: string,
     postId: number,
   ): Promise<ResponseType.WriteSubCommentResponseType> {
@@ -63,7 +63,7 @@ export default class CommentApiRouter extends BaseCommentApiRouter {
       writerId: context.session.userId,
       contentS3Key,
       postId,
-      parentCommentId: parseInt(parentCommentId, 10),
+      parentCommentId,
     });
     return {
       isSuccessful: true,
