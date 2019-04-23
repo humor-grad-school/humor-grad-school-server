@@ -58,15 +58,19 @@ export default class CommentApiRouter extends BaseCommentApiRouter {
     contentS3Key: string,
     postId: number,
   ): Promise<ResponseType.WriteSubCommentResponseType> {
+    const { userId } = context.session;
 
-    await CommentModel.query().insert({
-      writerId: context.session.userId,
+    const comment = await CommentModel.query().insert({
+      writerId: userId,
       contentS3Key,
       postId,
       parentCommentId,
     });
     return {
       isSuccessful: true,
+      data: {
+        commentId: comment.id,
+      },
     };
   }
 }
