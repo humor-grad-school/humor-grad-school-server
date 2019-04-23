@@ -54,19 +54,23 @@ export default class CommentApiRouter extends BaseCommentApiRouter {
 
   protected async writeSubComment(
     context: HgsRouterContext,
-    parentCommentId: string,
+    parentCommentId: number,
     contentS3Key: string,
     postId: number,
   ): Promise<ResponseType.WriteSubCommentResponseType> {
+    const { userId } = context.session;
 
-    await CommentModel.query().insert({
-      writerId: context.session.userId,
+    const comment = await CommentModel.query().insert({
+      writerId: userId,
       contentS3Key,
       postId,
-      parentCommentId: parseInt(parentCommentId, 10),
+      parentCommentId,
     });
     return {
       isSuccessful: true,
+      data: {
+        commentId: comment.id,
+      },
     };
   }
 }
