@@ -1,6 +1,7 @@
 import Router, { IRouterContext } from 'koa-router';
 import sessionCacheService from './Cache/sessionCacheService';
 import { passAuthorizationMiddleware } from './types/generated/server/ServerBaseApiRouter';
+import { ErrorCode } from './types/generated/ErrorCode';
 
 export default class AuthorizationPassService {
   private passingAuthorizationPathRegExpList: RegExp[] = [];
@@ -18,24 +19,36 @@ export default class AuthorizationPassService {
         if (isPassablePath) {
           return next();
         }
-        ctx.status = 401;
+        ctx.response.body = {
+          isSuccessful: false,
+          errorCode: ErrorCode.DefaultErrorCode.Unauthenticated,
+        };
         return;
       }
 
       if (authorizationHeader.indexOf('sessiontoken ') !== 0) {
-        ctx.status = 401;
+        ctx.response.body = {
+          isSuccessful: false,
+          errorCode: ErrorCode.DefaultErrorCode.Unauthenticated,
+        };
         return;
       }
 
       const sessionToken = authorizationHeader.substring('sessiontoken '.length);
       if (!sessionToken) {
-        ctx.status = 401;
+        ctx.response.body = {
+          isSuccessful: false,
+          errorCode: ErrorCode.DefaultErrorCode.Unauthenticated,
+        };
         return;
       }
 
       const session = await sessionCacheService.get(sessionToken);
       if (!session) {
-        ctx.status = 401;
+        ctx.response.body = {
+          isSuccessful: false,
+          errorCode: ErrorCode.DefaultErrorCode.Unauthenticated,
+        };
         return;
       }
 

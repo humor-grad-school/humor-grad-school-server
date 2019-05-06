@@ -1,11 +1,11 @@
 import { BaseAuthenticationApiRouter, HgsRouterContext, Session } from "./types/generated/server/ServerBaseApiRouter";
 import { ResponseType } from "./types/generated/ResponseType";
 import { getAuthenticationService } from "./AuthenticationService";
-import { ErrorCode } from "./ErrorCode";
 import UserModel from "@/Model/UserModel";
 import uuid from 'uuid/v4';
 import sessionCacheService from "./Cache/sessionCacheService";
 import { RequestInformation } from "./AuthenticationService/BaseAuthenticationService";
+import { ErrorCode } from "./types/generated/ErrorCode";
 
 async function issueSessionToken(user: UserModel): Promise<string> {
   const sessionToken = uuid();
